@@ -304,6 +304,7 @@ public class Client_Demo : MonoBehaviour
                         }
                         else
                         {
+                            Debug.Log("Stream Level cannot be loaded!");
                             // load another scene?
                         }
                     }

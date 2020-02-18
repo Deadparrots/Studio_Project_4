@@ -100,7 +100,7 @@ public class ShipMovement : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     //TODO Spawn Shot
-                    Client_Demo.Instance.SendShotRequest();
+                   // Client_Demo.Instance.SendShotRequest();
                 }
             }
             else

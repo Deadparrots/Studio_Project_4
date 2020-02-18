@@ -385,7 +385,7 @@ public class Server_Demo : MonoBehaviour
         if (m_NetworkWriter.StartWritting())
         {
 
-            Debug.Log("Changing Scenes");
+            Debug.Log("Changing to " + sceneName);
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_CHANGESCENE);
             m_NetworkWriter.Write(sceneName);
 
