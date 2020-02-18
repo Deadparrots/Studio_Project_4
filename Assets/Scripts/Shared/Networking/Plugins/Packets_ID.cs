@@ -12,16 +12,10 @@ public enum Packets_ID : byte
     NET_CHAT,
 
     ID_MOVEMENT,
-    ID_NEWSHIP,
+    ID_NEWPLAYER,
     ID_WELCOME,
     ID_INITIALSTATS,
-    ID_AISHIPS,
-    ID_AISHIPSMOVEMENT,
-    ID_SHOTSREQUEST,
-    ID_NEWSHOT,
-    ID_REMOVESHOT,
-    ID_SHOTMOVEMENT,
-    ID_HIT,
+    ID_CHANGESCENE
 
 
     /* unused in demo

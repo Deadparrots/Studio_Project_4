@@ -51,9 +51,6 @@ MonoBehaviour:
     client_version: 
   m_State: 0
   Info: {fileID: 0}
-  shipReference: {fileID: 2560947378214579882, guid: e45ec0b1af6acbb44b7d41ca63a80e76,
+  playerReference: {fileID: 6027124714072799679, guid: 9070529c34e2b6d48861fd961ba376d9,
     type: 3}
-  shotReference: {fileID: 4156497594331976038, guid: 3f6d25e590923024585b646bd3cbdae5,
-    type: 3}
-  destructionFX: {fileID: 1247783923464253333, guid: aa4b6890c7ca8d64582d5865e0fa4a44,
-    type: 3}
+  enemyReference: {fileID: 0}
