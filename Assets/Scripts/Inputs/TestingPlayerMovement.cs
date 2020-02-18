@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class TestingPlayerMovement : MonoBehaviour
 {
+
+    public GameObject model;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,5 +37,7 @@ public class TestingPlayerMovement : MonoBehaviour
         {
             transform.position += new Vector3(0.1f, 0, 0);
         }
+
+        model.transform.rotation = Quaternion.Euler(0, Globals.MouseToCenterAngle, 0);
     }
 }
