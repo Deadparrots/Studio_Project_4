@@ -3,45 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Peer;
 using UnityEngine.UI;
-using System;
+using UnityEngine.SceneManagement;
 
-public struct ShipObject
+public class playerObject
 {
     public uint id;
     public float m_x;
     public float m_y;
-    public float velocityX;
-    public float velocityY;
-    public float rotationVelocity;
-    public int shipNum;
+    public float m_z;
+    public float velocity_X;
+    public float velocity_Y;
+    public float velocity_Z;
+    public int playerNum;
     public string name;
-    public float rotation;
+    public float rotation_x;
+    public float rotation_y;
+    public float rotation_z;
 
-    public ShipObject(uint _id)
+    public playerObject(uint _id)
     {
-        this.shipNum = 1;
-        m_x = velocityX = velocityY = 0.0f;
+        this.playerNum = 1;
+        m_x = 0.0f;
         m_y = 0.0f;
+        m_z = 0.0f;
         id = _id;
         name = "";
-        rotation = rotationVelocity = 0.0f;
-    }
-}
-
-public struct ShotObject
-{
-    public uint id;
-    public Vector2 position;
-    public Vector2 velocity;
-    public float rotation;
-
-    public ShotObject(uint _id, Vector2 _position, float _rotation)
-    {
-        position = _position;
-        id = _id;
-        rotation = _rotation;
-        float angle = (rotation + 90) * Mathf.Deg2Rad;
-        velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * 3;
+        velocity_X = velocity_Y = velocity_Z = 0.0f;
+        rotation_x = rotation_y = rotation_z = 0.0f;
     }
 }
 
@@ -53,14 +41,12 @@ public class Server_Demo : MonoBehaviour
     public static Server_Demo Instance;
     public Text Info;
 
-    private Dictionary<ulong, ShipObject> clients = new Dictionary<ulong, ShipObject>();
-    private List<ShipObject> AIShips = new List<ShipObject>();
-    private List<ShotObject> Shotsfired = new List<ShotObject>();
-    private float AISpeed = 0.5f;
-    private uint shipID;
+    private Dictionary<ulong, playerObject> clients = new Dictionary<ulong, playerObject>();
 
-    private uint shotcounter;
+    private uint playerID;
+    private uint enemyID;
 
+    const int MAX_PLAYERS = 2;
     private void Awake()
     {
         Instance = this;
@@ -68,18 +54,7 @@ public class Server_Demo : MonoBehaviour
 
     public void Init(int _port)
     {
-        StartServer("127.0.0.1", _port,2);
-
-        for(uint i = 0; i <5; ++i)
-        {
-            ShipObject tempShip = new ShipObject(i);
-            tempShip.m_x = i;
-            tempShip.m_y = 2;
-
-            AIShips.Add(tempShip);
-
-        }
-        shotcounter = 0;
+        StartServer("127.0.0.1", _port,MAX_PLAYERS);
     }
 
     public void StopServer()
@@ -147,58 +122,22 @@ public class Server_Demo : MonoBehaviour
             }
         }
 
-        for(int i =0; i < AIShips.Count; ++i)
+        //if(spawnPickUpTimer < 0.0f)
+        //{
+        //    spawnPickUpTimer = spawnPickUpCoolDown;
+        //    SpawnPickUp();
+        //}
+        //else
+        //{
+        //    spawnPickUpTimer -= Time.deltaTime;
+        //}
+
+        if (Input.GetKeyDown("space"))
         {
-
-            foreach (ShipObject shipObj in clients.Values)
-            {
-                ShipObject aiShip = AIShips[i];
-                Vector2 AIposition = new Vector2(aiShip.m_x, aiShip.m_y);
-                Vector2 shipPosition = new Vector2(shipObj.m_x, shipObj.m_y);
-                if (Vector2.Distance(AIposition, shipPosition) <1f)
-                {
-                    float step = 1f * Time.deltaTime;
-                    Vector2 newPosition = Vector2.MoveTowards(AIposition, shipPosition, step);
-                    aiShip.m_x = newPosition.x;
-                    aiShip.m_y = newPosition.y;
-
-                    AIShips[i] = aiShip;
-                    SendAIPosition();
-                }
-            }
-               
-        }
-
-        for(int i = 0; i < Shotsfired.Count; ++i)
-        {
-            ShotObject shot = Shotsfired[i];
-            //shot.position += shot.velocity * (1f * Time.deltaTime);
-            float step = shot.velocity.magnitude * Time.deltaTime;
-            Vector2 temp = new Vector2(shot.position.x + shot.velocity.x, shot.position.y + shot.velocity.y);
-            shot.position = Vector2.MoveTowards(shot.position, temp, step);
-            Shotsfired[i] = shot;
-
-        }
-        SendShotPosition();
-
-    }
-
-    private void SendShotPosition()
-    {
-        if (m_NetworkWriter.StartWritting())
-        {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOTMOVEMENT);
-            m_NetworkWriter.Write(Shotsfired.Count);
-
-            foreach (ShotObject tempObj in Shotsfired)
-            {
-                m_NetworkWriter.Write(tempObj.id);
-                m_NetworkWriter.Write(tempObj.position.x);
-                m_NetworkWriter.Write(tempObj.position.y);
-            }
-            SendToAll(0, m_NetworkWriter, false);
+            ChangeScene("Scene2");
         }
     }
+
 
     private void OnReceivedPacket(byte packet_id)
     {
@@ -218,7 +157,6 @@ public class Server_Demo : MonoBehaviour
                 if (conn != null)
                 {
                     OnDisconnected(FindConnection(peer.incomingGUID));
-
                 }
             }
         }
@@ -235,84 +173,13 @@ public class Server_Demo : MonoBehaviour
                 case (byte)Packets_ID.ID_MOVEMENT:
                     OnReceivedClientMovementData(peer.incomingGUID);
                     break;
-                case (byte)Packets_ID.ID_SHOTSREQUEST:
-                    OnReceivedShotRequestData(peer.incomingGUID);
-                    break;
-                case (byte)Packets_ID.ID_HIT:
-                    OnRecievedShipDeleteRequest(peer.incomingGUID);
-                    break;
-                case (byte)Packets_ID.ID_REMOVESHOT:
-                    OnRecievedShotDeleteRequest(peer.incomingGUID);
-                    break;
-                
             }
            
-        }
-    }
 
-    private void OnRecievedShipDeleteRequest(ulong guid)
-    {
-        uint tobedeleted = m_NetworkReader.ReadUInt32();
-
-        for (int i = 0; AIShips.Count > i;i++)
-        {
-            if (AIShips[i].id == tobedeleted)
-            {
-                AIShips.RemoveAt(i);
-                break;
-            }
-        }
-
-        if (m_NetworkWriter.StartWritting())
-        {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_HIT);
-            m_NetworkWriter.Write(tobedeleted);
-            SendToAll(guid, m_NetworkWriter, false);
-        }
-    }
-    private void OnRecievedShotDeleteRequest(ulong guid)
-    {
-        uint tobedeleted = m_NetworkReader.ReadUInt32();
-
-        for (int i = 0; Shotsfired.Count > i;i++)
-        {
-            if (Shotsfired[i].id == tobedeleted)
-            {
-                Shotsfired.RemoveAt(i);
-                break;
-            }
-        }
-
-        if (m_NetworkWriter.StartWritting())
-        {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_REMOVESHOT);
-            m_NetworkWriter.Write(tobedeleted);
-            SendToAll(guid, m_NetworkWriter, false);
         }
     }
 
 
-    private void OnReceivedShotRequestData(ulong guid)
-    {
-        ShipObject tempObj = clients[guid];
-
-        clients[guid] = tempObj;
-        shotcounter += 1;
-        ShotObject shot = new ShotObject((shotcounter), new Vector2(tempObj.m_x,tempObj.m_y), tempObj.rotation);
-        Shotsfired.Add(shot);
-
-        if (m_NetworkWriter.StartWritting())
-        {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWSHOT);
-            m_NetworkWriter.Write(shot.id);
-            m_NetworkWriter.Write(tempObj.m_x);
-            m_NetworkWriter.Write(tempObj.m_y);
-
-            m_NetworkWriter.Write(tempObj.rotation);
-
-            SendToAll(guid, m_NetworkWriter, false);
-        }
-    }
 
     #region Connections
     public List<Connection> connections = new List<Connection>();
@@ -434,31 +301,19 @@ public class Server_Demo : MonoBehaviour
         }
     }
     
-    private void SendAIPosition()
-    {
-        if (m_NetworkWriter.StartWritting())
-        {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_AISHIPSMOVEMENT);
-            m_NetworkWriter.Write(AIShips.Count);
 
-            foreach (ShipObject tempObj in AIShips)
-            {
-                m_NetworkWriter.Write(tempObj.id);
-                m_NetworkWriter.Write(tempObj.m_x);
-                m_NetworkWriter.Write(tempObj.m_y);
-            }
-            SendToAll(0, m_NetworkWriter, false);
-        }
-    }
     private void OnReceivedClientMovementData(ulong guid)
     {
-        ShipObject tempObj = clients[guid];
+        playerObject tempObj = clients[guid];
         tempObj.m_x = m_NetworkReader.ReadFloat();
         tempObj.m_y = m_NetworkReader.ReadFloat();
-        tempObj.rotation = m_NetworkReader.ReadFloat();
-        tempObj.velocityX = m_NetworkReader.ReadFloat();
-        tempObj.velocityY = m_NetworkReader.ReadFloat();
-        tempObj.rotationVelocity = m_NetworkReader.ReadFloat();
+        tempObj.m_z = m_NetworkReader.ReadFloat();
+        tempObj.rotation_x = m_NetworkReader.ReadFloat();
+        tempObj.rotation_y = m_NetworkReader.ReadFloat();
+        tempObj.rotation_z = m_NetworkReader.ReadFloat();
+        tempObj.velocity_X = m_NetworkReader.ReadFloat();
+        tempObj.velocity_Y = m_NetworkReader.ReadFloat();
+        tempObj.velocity_Z = m_NetworkReader.ReadFloat();
 
         clients[guid] = tempObj;
 
@@ -468,10 +323,13 @@ public class Server_Demo : MonoBehaviour
             m_NetworkWriter.Write(tempObj.id);
             m_NetworkWriter.Write(tempObj.m_x);
             m_NetworkWriter.Write(tempObj.m_y);
-            m_NetworkWriter.Write(tempObj.rotation);
-            m_NetworkWriter.Write(tempObj.velocityX);
-            m_NetworkWriter.Write(tempObj.velocityY);
-            m_NetworkWriter.Write(tempObj.rotationVelocity);
+            m_NetworkWriter.Write(tempObj.m_z);
+            m_NetworkWriter.Write(tempObj.rotation_x);
+            m_NetworkWriter.Write(tempObj.rotation_y);
+            m_NetworkWriter.Write(tempObj.rotation_z);
+            m_NetworkWriter.Write(tempObj.velocity_X);
+            m_NetworkWriter.Write(tempObj.velocity_Y);
+            m_NetworkWriter.Write(tempObj.velocity_Z);
 
             SendToAll(guid, m_NetworkWriter, true);
         }
@@ -479,28 +337,34 @@ public class Server_Demo : MonoBehaviour
 
     private void OnReceivedClientInitialStats(ulong guid)
     {
-        ShipObject tempObj = clients[guid];
+        playerObject tempObj = clients[guid];
         tempObj.name = m_NetworkReader.ReadString();
         tempObj.m_x = m_NetworkReader.ReadFloat();
         tempObj.m_y = m_NetworkReader.ReadFloat();
+        tempObj.m_z = m_NetworkReader.ReadFloat();
+        tempObj.rotation_x = m_NetworkReader.ReadFloat();
+        tempObj.rotation_y = m_NetworkReader.ReadFloat();
+        tempObj.rotation_z = m_NetworkReader.ReadFloat();
 
         clients[guid] = tempObj;
 
         if (m_NetworkWriter.StartWritting())
         {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWSHIP);
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWPLAYER);
             m_NetworkWriter.Write(tempObj.id);
             m_NetworkWriter.Write(tempObj.name);
             m_NetworkWriter.Write(tempObj.m_x);
             m_NetworkWriter.Write(tempObj.m_y);
-            m_NetworkWriter.Write(tempObj.shipNum);
+            m_NetworkWriter.Write(tempObj.m_z);
+            m_NetworkWriter.Write(tempObj.rotation_x);
+            m_NetworkWriter.Write(tempObj.rotation_y);
+            m_NetworkWriter.Write(tempObj.rotation_z);
+            m_NetworkWriter.Write(tempObj.playerNum);
 
             SendToAll(guid, m_NetworkWriter, true);
-           // peer.SendBroadcast(Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
-         
+            // peer.SendBroadcast(Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
+
         }
-
-
     }
     private void SendToAll(ulong guid, NetworkWriter _writer, bool broadcast)
     {
@@ -515,11 +379,30 @@ public class Server_Demo : MonoBehaviour
             peer.SendData(guids, Peer.Reliability.Reliable, 0, _writer);
         }
     }
-    
+
+    void ChangeScene(string sceneName)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+
+            Debug.Log("Changing Scenes");
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_CHANGESCENE);
+            m_NetworkWriter.Write(sceneName);
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
+    }
+
     private void OnReceivedClientNetInfo(ulong guid)
     {
         Debug.Log("server received data");
         Connection connection = FindConnection(guid);
+
+        if (clients.Count == MAX_PLAYERS)
+            return;
 
         if (connection != null)
         {
@@ -531,56 +414,39 @@ public class Server_Demo : MonoBehaviour
                 connection.Info.local_id = m_NetworkReader.ReadPackedUInt64();
                 connection.Info.client_hwid = m_NetworkReader.ReadString();
                 connection.Info.client_version = m_NetworkReader.ReadString();
-                ++shipID;
+                ++playerID;
 
                 Debug.Log("Sent");
 
                 if (m_NetworkWriter.StartWritting())
                 {
                     m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_WELCOME);
-                    m_NetworkWriter.Write(shipID);
+                    m_NetworkWriter.Write(playerID);
                     m_NetworkWriter.Write(clients.Count);
-                    
-                   foreach (ShipObject shipObj in clients.Values)
+
+                    foreach (playerObject playerObj in clients.Values)
                     {
-                        m_NetworkWriter.Write(shipObj.id);
-                        m_NetworkWriter.Write(shipObj.m_x);
-                        m_NetworkWriter.Write(shipObj.m_y);
-                        m_NetworkWriter.Write(shipObj.shipNum);
-                        m_NetworkWriter.Write(shipObj.name);
+                        m_NetworkWriter.Write(playerObj.id);
+                        m_NetworkWriter.Write(playerObj.m_x);
+                        m_NetworkWriter.Write(playerObj.m_y);
+                        m_NetworkWriter.Write(playerObj.m_z);
+                        m_NetworkWriter.Write(playerObj.rotation_x);
+                        m_NetworkWriter.Write(playerObj.rotation_y);
+                        m_NetworkWriter.Write(playerObj.rotation_z);
+                        m_NetworkWriter.Write(playerObj.playerNum);
+                        m_NetworkWriter.Write(playerObj.name);
+                        //m_NetworkWriter.Write
                     }
-                   peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
-                  //  m_NetworkWriter.Send//sending
+                    peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+                    //  m_NetworkWriter.Send//sending
                     //m_NetworkWriter.Reset();
 
-                    ShipObject newObj = new ShipObject(shipID);
-                    newObj.shipNum = m_NetworkReader.ReadInt32();
+                    playerObject newObj = new playerObject(playerID);
+                    newObj.playerNum = m_NetworkReader.ReadInt32();
                     clients.Add(guid, newObj);
 
                     Debug.Log("Added new guy : " + newObj.id);
-
-
-                  
                 }
-
-                if (m_NetworkWriter.StartWritting())
-                {
-                    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_AISHIPS);
-                    m_NetworkWriter.Write(AIShips.Count);
-
-                    foreach (ShipObject shipObj in AIShips)
-                    {
-                        m_NetworkWriter.Write(shipObj.id);
-                        m_NetworkWriter.Write(shipObj.m_x);
-                        m_NetworkWriter.Write(shipObj.m_y);
-
-                        Debug.Log(shipObj.m_x);
-                    }
-                    peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
-                
-                }
-
-
                 //peer.SendPacket(connection, Packets_ID.NET_LOGIN, Reliability.Reliable, m_NetworkWriter);
             }
             else
