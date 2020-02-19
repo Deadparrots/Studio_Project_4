@@ -7,6 +7,9 @@ public class TexturedCursor : MonoBehaviour
     private Vector2 position;
     public Texture2D texture;
 
+    public float scale;
+    public Vector2 ClickPosition;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +23,7 @@ public class TexturedCursor : MonoBehaviour
 
     void OnGUI()
     {
-        Vector2 mousepos = new Vector2(Input.mousePosition.x, Screen.height -  Input.mousePosition.y);
+        Vector2 mousepos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);
         position = new Vector2(Screen.width / 2 - Input.mousePosition.x, Screen.height / 2 - Input.mousePosition.y);
         float angle = -(Mathf.Atan2(position.y, position.x) * Mathf.Rad2Deg) - 90;
         Globals.MouseToCenterAngle = angle;
@@ -28,7 +31,7 @@ public class TexturedCursor : MonoBehaviour
 
         Matrix4x4 back = GUI.matrix;
         GUIUtility.RotateAroundPivot(angle, mousepos );
-        Rect rect = new Rect(mousepos.x, mousepos.y, texture.width, texture.height);
+        Rect rect = new Rect(mousepos.x - ClickPosition.x, mousepos.y - ClickPosition.y, texture.width * scale, texture.height * scale);
         GUI.DrawTexture(rect, texture);
         GUI.matrix = back;
     }
