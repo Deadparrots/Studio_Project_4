@@ -12,9 +12,24 @@ EditorBuildSettings:
     path: Assets/Scenes/Demo-MPGP.unity
     guid: 95de8b17b43b1b947b280eb7bc0b2ead
   - enabled: 1
+    path: Assets/Scenes/SplashScreen.unity
+    guid: 414b13dc243595b4e872a266e375d627
+  - enabled: 1
     path: Assets/Scenes/SP4.unity
     guid: b6da86af9db83ed4aad5ec29db0b7fd7
   - enabled: 1
     path: Assets/Scenes/Scene2.unity
     guid: d5fb8128135b2b04cad3089d3434eb24
+  - enabled: 1
+    path: Assets/Scenes/EndScreen.unity
+    guid: 2d872f18c3dbc2d47a0efd05df974fca
+  - enabled: 1
+    path: Assets/Scenes/Gameplay.unity
+    guid: 075e2fa859780bf4c8e617bf5f4e17db
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 7b81554489ba94f4a9cf3e6e076d3c67
+  - enabled: 1
+    path: Assets/Scenes/ConnectScreen.unity
+    guid: 103ecee90a9131d4ab0d0536710b2f03
   m_configObjects: {}
