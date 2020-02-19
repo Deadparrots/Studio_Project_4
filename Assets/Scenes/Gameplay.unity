@@ -146,13 +146,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 98097850}
-  m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
-  m_LocalPosition: {x: 0, y: 6, z: -15}
-  m_LocalScale: {x: 1, y: 1.0820221, z: 0.77287275}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
+  m_LocalPosition: {x: 0, y: 7, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1907150550}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!81 &98097852
 AudioListener:
   m_ObjectHideFlags: 0
@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Reference: {fileID: 1686913286}
-  Position: {x: 0, y: 6, z: -15}
+  Position: {x: 0, y: 7, z: -10}
 --- !u!1 &136514909
 GameObject:
   m_ObjectHideFlags: 0
@@ -2572,6 +2572,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   texture: {fileID: 2800000, guid: 08db459a1f11e2b4db400e97dd6b440b, type: 3}
+  scale: 0.3
+  ClickPosition: {x: 35.7, y: 0}
 --- !u!222 &1600563551
 CanvasRenderer:
   m_ObjectHideFlags: 0
