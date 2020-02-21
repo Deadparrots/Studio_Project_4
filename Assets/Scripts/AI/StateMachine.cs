@@ -33,7 +33,7 @@ namespace StateStuff
         {
             if (_newState == null)
                 return;
-            if (!state_dictionary.ContainsKey(_newState.GetStateID()))
+            if (state_dictionary.ContainsKey(_newState.GetStateID()))
                 return;
 
             if (currentState != _newState)
@@ -52,6 +52,7 @@ namespace StateStuff
         {
             if(nextState != currentState)
             {
+
                 currentState.Exit();
                 currentState = nextState;
                 currentState.Enter();

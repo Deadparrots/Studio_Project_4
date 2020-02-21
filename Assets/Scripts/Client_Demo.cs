@@ -18,6 +18,7 @@ public class Client_Demo : MonoBehaviour
     [SerializeField] private GameObject enemyReference;
 
     private List<PlayerManager> playersList = new List<PlayerManager>();
+    private List<EnemyAI> enemyList = new List<EnemyAI>();
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
     //private List<PickUpsManager> pickUpList = new List<PickUpsManager>();
@@ -249,6 +250,19 @@ public class Client_Demo : MonoBehaviour
                         otherManager.pName = m_NetworkReader.ReadString();
                         playersList.Add(otherManager);
                     }
+
+                    int enemyCount = m_NetworkReader.ReadInt32();
+
+                    for (int i = 0; i < enemyCount; ++i)
+                    {
+                        GameObject enemy = Instantiate(enemyReference);
+                        EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+                        enemyManager.pid = m_NetworkReader.ReadUInt32();
+                        Debug.Log("ID: " + enemyManager.pid);
+                        enemyManager.ePosition = m_NetworkReader.ReadVector3();
+                        enemyManager.eRotation = m_NetworkReader.ReadVector3();
+                        enemyList.Add(enemyManager);
+                    }
                     SendInitialStats();
 
                     break;
@@ -309,6 +323,23 @@ public class Client_Demo : MonoBehaviour
                         }
                     }
                     break;
+
+                case (byte)Packets_ID.ID_DESTROYENEMY:
+                    {
+                        uint enemyID = m_NetworkReader.ReadUInt32();
+                        foreach (EnemyAI enemy in enemyList)
+                        {
+                            if (enemy.pid == enemyID)
+                            {
+                                enemyList.Remove(enemy);
+                                Destroy(enemy.gameObject);
+                                Debug.Log("Destroyed Enemy in Client");
+                            }
+                        }
+                    }
+                    break;
+
+                    //end
             }
         }
     }
