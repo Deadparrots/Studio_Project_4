@@ -37,16 +37,17 @@ public class TestingPlayerMovement : MonoBehaviour
             Movement += new Vector3(0.1f, 0, 0);
         }
 
-        if (Input.GetKey(InputManager.MoveForward))
+        Movement = Movement.normalized * 0.1f; //Forces the movement to be 8 directions for wasd input
+
+        if (Input.GetKey(InputManager.MoveForward)) // Overrides the movement keys for now
         {
             float radian = -(Globals.MouseToCenterAngle - 90) * Mathf.Deg2Rad;
-            Movement += new Vector3(Mathf.Cos(radian), 0, Mathf.Sin(radian)) / 10;
+            Movement = (new Vector3(Mathf.Cos(radian), 0, Mathf.Sin(radian)) / 10);
         }
 
-        Movement = Movement.normalized * 0.1f;
-
+        //TODO: Replace with send to server
         transform.position += Movement; // SEND TO SERVER
 
-        model.transform.rotation = Quaternion.Euler(0, Globals.MouseToCenterAngle, 0);
+        model.transform.rotation = Quaternion.Euler(0, Globals.MouseToCenterAngle, 0); // Send to server, can keep here
     }
 }
