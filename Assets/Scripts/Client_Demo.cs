@@ -264,30 +264,34 @@ public class Client_Demo : MonoBehaviour
                         enemyList.Add(enemyManager);
                     }
                     SendInitialStats();
-
                     break;
+
                 case (byte)Packets_ID.ID_MOVEMENT:
-                    uint playerID = m_NetworkReader.ReadUInt32();
-
-                    foreach (PlayerManager player in playersList)
                     {
-                        if (player.pid == playerID)
+                        uint playerID = m_NetworkReader.ReadUInt32();
+
+                        foreach (PlayerManager player in playersList)
                         {
-                            //  ship.position = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), 0);
-                            //  ship.pRotation = m_NetworkReader.ReadFloat();
+                            if (player.pid == playerID)
+                            {
+                                //  ship.position = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), 0);
+                                //  ship.pRotation = m_NetworkReader.ReadFloat();
 
-                            // Step 8 : Instead of using ship.position, use server_pos and serverRotation
-                            // set server position, server rotation
-                            player.server_pos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
-                            player.serverRotation = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
-                            Debug.Log("Server rotation: " + player.serverRotation);
-                            // Lab 7 Task 1 : Read Extrapolation Data velocity x, velocity y & angular velocity
-                            // set velocity and rotation velocity of ship (look at ship Manager)
+                                // Step 8 : Instead of using ship.position, use server_pos and serverRotation
+                                // set server position, server rotation
+                                player.server_pos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                                player.serverRotation = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                                Debug.Log("Server rotation: " + player.serverRotation);
+                                // Lab 7 Task 1 : Read Extrapolation Data velocity x, velocity y & angular velocity
+                                // set velocity and rotation velocity of ship (look at ship Manager)
 
-                            player.velocity = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                                player.velocity = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                            }
                         }
                     }
+
                     break;
+
                 case (byte)Packets_ID.ID_NEWPLAYER:
                     {
                         GameObject playerObj = Instantiate(playerReference);
@@ -334,6 +338,56 @@ public class Client_Demo : MonoBehaviour
                                 enemyList.Remove(enemy);
                                 Destroy(enemy.gameObject);
                                 Debug.Log("Destroyed Enemy in Client");
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+
+                case (byte)Packets_ID.ID_DMGPLAYER:
+                    {
+                        uint playerID = m_NetworkReader.ReadUInt32();
+                        float dmg = m_NetworkReader.ReadFloat();
+                        foreach (PlayerManager player in playersList)
+                        {
+                            if (player.pid == playerID)
+                            {
+                                Debug.Log(dmg + "dmg dealt to player " + playerID);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_DMGENEMY:
+                    {
+                        uint enemyID = m_NetworkReader.ReadUInt32();
+                        float dmg = m_NetworkReader.ReadFloat();
+                        foreach (EnemyAI enemy in enemyList)
+                        {
+                            if (enemy.pid == enemyID)
+                            {
+                                enemy.hp -= dmg;
+                                Debug.Log(dmg + "dmg dealt to enemy " + enemyID);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_UPDATENEMY:
+                    {
+                        uint enemyID = m_NetworkReader.ReadUInt32();
+                        Vector3 position = m_NetworkReader.ReadVector3();
+                        Vector3 rotation = m_NetworkReader.ReadVector3();
+                        foreach (EnemyAI enemy in enemyList)
+                        {
+                            if (enemy.pid == enemyID)
+                            {
+                                enemy.ePosition = position;
+                                enemy.gameObject.transform.eulerAngles = rotation;
+                                break;
                             }
                         }
                     }

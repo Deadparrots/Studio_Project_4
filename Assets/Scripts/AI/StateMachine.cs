@@ -36,7 +36,7 @@ namespace StateStuff
             if (state_dictionary.ContainsKey(_newState.GetStateID()))
                 return;
 
-            if (currentState != _newState)
+            if (currentState == null)
                 currentState = nextState = _newState;
             state_dictionary.Add(_newState.GetStateID(), _newState);
         }

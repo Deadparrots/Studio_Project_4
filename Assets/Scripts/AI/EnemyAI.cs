@@ -23,23 +23,28 @@ public class EnemyAI : MonoBehaviour
     private Transform targetWaypoint;
     private int currentWaypointIndex;
     private float m_fDistanceTolerance = 1.0f;
-    private float engagementRangeSquared;
-    private float attackRangeSquared;
+    private float engagementRangeSquared = 100.0f;
+    private float attackRangeSquared = 10.0f;
     private int lastWaypointIndex;
 
+
+    // Animations
+    Animator anim;
     private void Awake()
     {
         position = gameObject.transform.position;
         rotation = gameObject.transform.rotation.eulerAngles;
+        rotation.y -= 180;
     }
     void Start()
     {
 
         sm = new StateMachine<EnemyAI>(this);
         sm.AddState(new PatrolState(this, "Patrol"));
-        //sm.AddState(new ChaseState(this, "Chase"));
+        sm.AddState(new ChaseState(this, "Chase"));
         sm.SetNextState("Patrol");
         isController = false;
+        anim = GetComponent<Animator>();
     }
 
     public uint pid
@@ -109,10 +114,35 @@ public class EnemyAI : MonoBehaviour
         // statemachine should only be updated by server for consitency
         // isController is to identify whether this AI is in server or in client
         if (isController)
+        {
             sm.Update(Time.deltaTime);
+            Server_Demo.Instance.UpdateEnemyInClient(id, position, rotation);
+        }
+
 
         gameObject.transform.position = position;
-        gameObject.transform.eulerAngles = rotation;
+        //gameObject.transform.eulerAngles = rotation;
+        rotation = gameObject.transform.rotation.eulerAngles;
+
+        if (sm.GetCurrentState() == "Patrol" || sm.GetCurrentState() == "Chase")
+        {
+            anim.SetBool("isWalking", true);
+            anim.SetBool("isAttacking", false);
+            anim.SetBool("isDead", false);
+        }
+        else if (sm.GetCurrentState() == "Attack")
+        {
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isAttacking", true);
+            anim.SetBool("isDead", false);
+        }
+        else if(sm.GetCurrentState() == "Dead")
+        {
+            anim.SetBool("isWalking", false);
+            anim.SetBool("isAttacking", false);
+            anim.SetBool("isDead", false);
+        }
+
     }
 
     public List<playerObject> PlayerList
@@ -191,5 +221,13 @@ public class EnemyAI : MonoBehaviour
         }
 
         return theNearestWaypoint;
+    }
+
+    public void FaceTarget(Vector3 targetPosition)
+    {
+        Vector3 direction = (targetPosition - position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        rotation.y += (lookRotation.eulerAngles.y * 5.0f * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5.0f);
     }
 }

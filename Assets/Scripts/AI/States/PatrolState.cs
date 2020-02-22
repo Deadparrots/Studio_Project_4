@@ -25,6 +25,7 @@ public class PatrolState : State<EnemyAI>
     {
         Vector3 movementDirection = (m_go.WayPoints[m_go.WaypointIndex].position - m_go.ePosition).normalized;
         m_go.ePosition += movementDirection * (float)dt;
+        m_go.FaceTarget(m_go.WayPoints[m_go.WaypointIndex].position);
 
         if (m_go.hp < 0)
             m_go.sm.SetNextState("Dead");
@@ -55,7 +56,6 @@ public class PatrolState : State<EnemyAI>
     }
     public override void Exit()
     {
-        throw new System.NotImplementedException();
     }
 
 

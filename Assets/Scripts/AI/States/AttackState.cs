@@ -4,10 +4,10 @@ using UnityEngine;
 using StateStuff;
 using System;
 
-public class ChaseState : State<EnemyAI>
+public class AttackState : State<EnemyAI>
 {
     public EnemyAI m_go;
-    public ChaseState(EnemyAI _gameObject, string stateID)
+    public AttackState(EnemyAI _gameObject, string stateID)
         : base(State<EnemyAI>(stateID))
     {
         m_go = _gameObject;
@@ -42,27 +42,13 @@ public class ChaseState : State<EnemyAI>
                         closestPlayer = player;
                     }
                 }
-
-                Vector3 movementDirection = (playerPos - m_go.ePosition).normalized;
-                m_go.ePosition += movementDirection * (float)dt;
                 m_go.FaceTarget(playerPos);
 
-                if (shortestDistanceSquared > m_go.EngagementRangeSquared)
+                if (shortestDistanceSquared < m_go.AttackRangeSquared)
                 {
-                    m_go.sm.SetNextState("Patrol");
-                    m_go.WaypointIndex = m_go.GetNearestWaypointIndex();
-                }
-                else if (shortestDistanceSquared < m_go.AttackRangeSquared)
-                {
-                    m_go.sm.SetNextState("Attack");
+                    // Ask server to handle dmg taken by player
                 }
             }
-            else
-            {
-                m_go.sm.SetNextState("Patrol");
-                m_go.WaypointIndex = m_go.GetNearestWaypointIndex();
-            }
- 
         }
     }
     public override void Exit()

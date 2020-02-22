@@ -53,5 +53,5 @@ MonoBehaviour:
   Info: {fileID: 0}
   playerReference: {fileID: 6027124714072799679, guid: 9070529c34e2b6d48861fd961ba376d9,
     type: 3}
-  enemyReference: {fileID: 8709159707492318056, guid: 31ef3848273cc324fa766c962eed9dee,
+  enemyReference: {fileID: 8793741656139258734, guid: 65188a3e767cf044687bd270a01be04c,
     type: 3}

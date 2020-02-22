@@ -428,7 +428,7 @@ public class Server_Demo : MonoBehaviour
         }
     }
 
-    private void DestroyEnemy(uint enemyID)
+    public void DestroyEnemy(uint enemyID)
     {
         if (m_NetworkWriter.StartWritting())
         {
@@ -448,6 +448,55 @@ public class Server_Demo : MonoBehaviour
                         peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
                     }
                 }
+            }
+        }
+    }
+
+    public void DmgPlayer(uint playerID,float dmg)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DMGPLAYER);
+            m_NetworkWriter.Write(playerID);
+            m_NetworkWriter.Write(dmg);
+
+
+            foreach (ulong guids in clients.Keys)
+           {
+               peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+           }
+        }
+    }
+
+    public void DmgEnemy(uint enemyID, float dmg)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DMGENEMY);
+            m_NetworkWriter.Write(enemyID);
+            m_NetworkWriter.Write(dmg);
+
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
+    }
+
+    public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_UPDATENEMY);
+            m_NetworkWriter.Write(enemyID);
+            m_NetworkWriter.Write(position);
+            m_NetworkWriter.Write(rotation);
+
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
             }
         }
     }
