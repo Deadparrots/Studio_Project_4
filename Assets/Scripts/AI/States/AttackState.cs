@@ -44,10 +44,11 @@ public class AttackState : State<EnemyAI>
                 }
                 m_go.FaceTarget(playerPos);
 
-                if (shortestDistanceSquared < m_go.AttackRangeSquared)
+                if (shortestDistanceSquared > m_go.AttackRangeSquared)
                 {
-                    // Ask server to handle dmg taken by player
+                    m_go.sm.SetNextState("Chase");
                 }
+                else { }
             }
         }
     }

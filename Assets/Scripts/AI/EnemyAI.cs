@@ -42,6 +42,8 @@ public class EnemyAI : MonoBehaviour
         sm = new StateMachine<EnemyAI>(this);
         sm.AddState(new PatrolState(this, "Patrol"));
         sm.AddState(new ChaseState(this, "Chase"));
+        sm.AddState(new AttackState(this, "Attack"));
+        sm.AddState(new DeadState(this, "Dead"));
         sm.SetNextState("Patrol");
         isController = false;
         anim = GetComponent<Animator>();
@@ -116,7 +118,7 @@ public class EnemyAI : MonoBehaviour
         if (isController)
         {
             sm.Update(Time.deltaTime);
-            Server_Demo.Instance.UpdateEnemyInClient(id, position, rotation);
+            Server_Demo.Instance.UpdateEnemyInClient(id, position, rotation,sm.GetCurrentState());
         }
 
 

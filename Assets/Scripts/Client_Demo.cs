@@ -381,12 +381,14 @@ public class Client_Demo : MonoBehaviour
                         uint enemyID = m_NetworkReader.ReadUInt32();
                         Vector3 position = m_NetworkReader.ReadVector3();
                         Vector3 rotation = m_NetworkReader.ReadVector3();
+                        string currentState = m_NetworkReader.ReadString();
                         foreach (EnemyAI enemy in enemyList)
                         {
                             if (enemy.pid == enemyID)
                             {
                                 enemy.ePosition = position;
                                 enemy.gameObject.transform.eulerAngles = rotation;
+                                enemy.sm.SetCurrentState(currentState);
                                 break;
                             }
                         }

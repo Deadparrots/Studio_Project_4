@@ -29,6 +29,18 @@ namespace StateStuff
             }
         }
 
+        public void SetCurrentState(string StateID)
+        {
+            if (state_dictionary.ContainsKey(StateID))
+            {
+                foreach (var item in state_dictionary)
+                {
+                    if (item.Key == StateID)
+                        currentState = item.Value;
+                }
+            }
+        }
+
         public void AddState(State<T> _newState)
         {
             if (_newState == null)

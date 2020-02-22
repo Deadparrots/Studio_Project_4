@@ -484,7 +484,7 @@ public class Server_Demo : MonoBehaviour
         }
     }
 
-    public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation)
+    public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation,string currentState)
     {
         if (m_NetworkWriter.StartWritting())
         {
@@ -492,6 +492,7 @@ public class Server_Demo : MonoBehaviour
             m_NetworkWriter.Write(enemyID);
             m_NetworkWriter.Write(position);
             m_NetworkWriter.Write(rotation);
+            m_NetworkWriter.Write(currentState);
 
 
             foreach (ulong guids in clients.Keys)
