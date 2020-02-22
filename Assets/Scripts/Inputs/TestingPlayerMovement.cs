@@ -16,28 +16,38 @@ public class TestingPlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Vector3 Movement = new Vector3(0, 0, 0);
         if (Input.GetKey(InputManager.MoveUp))
         {
-            transform.position += new Vector3(0, 0, 0.1f); // temp
-            //TODO: Send MoveUp to server
-            //TODO: Constrain Camera
+            Movement += new Vector3(0, 0, 0.1f);
         }
 
         if (Input.GetKey(InputManager.MoveDown))
         {
-            transform.position -= new Vector3(0, 0, 0.1f);
+            Movement -= new Vector3(0, 0, 0.1f);
         }
 
         if (Input.GetKey(InputManager.MoveLeft))
         {
-            transform.position -= new Vector3(0.1f, 0, 0);
+            Movement -= new Vector3(0.1f, 0, 0);
         }
 
         if (Input.GetKey(InputManager.MoveRight))
         {
-            transform.position += new Vector3(0.1f, 0, 0);
+            Movement += new Vector3(0.1f, 0, 0);
         }
 
-        model.transform.rotation = Quaternion.Euler(0, Globals.MouseToCenterAngle, 0);
+        Movement = Movement.normalized * 0.1f; //Forces the movement to be 8 directions for wasd input
+
+        if (Input.GetKey(InputManager.MoveForward)) // Overrides the movement keys for now
+        {
+            float radian = -(Globals.MouseToCenterAngle - 90) * Mathf.Deg2Rad;
+            Movement = (new Vector3(Mathf.Cos(radian), 0, Mathf.Sin(radian)) / 10);
+        }
+
+        //TODO: Replace with send to server
+        transform.position += Movement; // SEND TO SERVER
+
+        model.transform.rotation = Quaternion.Euler(0, Globals.MouseToCenterAngle, 0); // Send to server, can keep here
     }
 }

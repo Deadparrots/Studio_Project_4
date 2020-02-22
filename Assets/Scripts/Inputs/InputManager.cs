@@ -4,6 +4,9 @@ using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
+// This is supposed to be something to allow changing controls at runtime
+
+
 public class InputManager : MonoBehaviour
 {
     public static InputManager inputManager;
@@ -27,7 +30,7 @@ public class InputManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        MoveForward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveForward", "Space"));
+        MoveForward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveForward", "Space")); // Will Be Changed to something else later on
         MoveUp = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveUp", "W"));
         MoveDown  = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveDown", "S"));
         MoveLeft  = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveLeft", "A"));
