@@ -30,7 +30,7 @@ public class SceneManagement : MonoBehaviour
     }
     public void ToGame()
     {
-        SceneManager.LoadScene("SP4");
+        SceneManager.LoadScene("Gameplay");
     }
     public void ToEndScreen()
     {

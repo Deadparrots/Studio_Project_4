@@ -32,6 +32,11 @@ public class playerObject
         rotation_x = rotation_y = rotation_z = 0.0f;
     }
 }
+public class WaypointPath
+{
+    public List<Transform> wayPoints = new List<Transform>();
+}
+
 
 public class Server_Demo : MonoBehaviour
 {
@@ -40,13 +45,13 @@ public class Server_Demo : MonoBehaviour
     private NetworkWriter m_NetworkWriter;
     public static Server_Demo Instance;
     public Text Info;
-
     private Dictionary<ulong, playerObject> clients = new Dictionary<ulong, playerObject>();
-
+    private List<EnemyAI> enemyList = new List<EnemyAI>();
     private uint playerID;
     private uint enemyID;
-
-    const int MAX_PLAYERS = 2;
+    public List<WaypointPath> waypointPathsList = new List<WaypointPath>();
+    const int MAX_PLAYERS = 4;
+    int totalWaypoints = 0;
     private void Awake()
     {
         Instance = this;
@@ -54,7 +59,37 @@ public class Server_Demo : MonoBehaviour
 
     public void Init(int _port)
     {
-        StartServer("127.0.0.1", _port,MAX_PLAYERS);
+        StartServer("127.0.0.1", _port, MAX_PLAYERS);
+
+        //for(int i = 0; i < 5; ++i)
+        //{
+        //    EnemyAI newAI = new EnemyAI();
+        //}
+        GameObject[] waypointPathGOs;
+        waypointPathGOs = GameObject.FindGameObjectsWithTag("WaypointPath");
+
+        foreach(GameObject waypointPath in waypointPathGOs)
+        {
+
+            WaypointPath temp = new WaypointPath();
+
+            foreach(Transform waypoint in waypointPath.transform)
+            {
+                temp.wayPoints.Add(waypoint);
+            }
+
+            waypointPathsList.Add(temp);
+        }
+
+        foreach (EnemyAI enemy in GameObject.FindObjectsOfType(typeof(EnemyAI)))
+        {
+            enemy.pid = enemyID;
+            enemy.controller = true;
+            enemy.WayPoints = waypointPathsList[0].wayPoints;
+            enemy.WaypointIndex = 0;
+            enemyList.Add(enemy);
+            ++enemyID;
+        }
     }
 
     public void StopServer()
@@ -134,8 +169,22 @@ public class Server_Demo : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-            ChangeScene("Scene2");
+            //ChangeScene("Scene2");
+            //DestroyEnemy(2);
+            ChangeScene("SP4");
         }
+
+        foreach (EnemyAI enemy in enemyList)
+        {
+            enemy.PlayerList.Clear();
+            foreach (playerObject player in clients.Values)
+            {
+                enemy.PlayerList.Add(player);
+            }
+        }
+        Debug.Log("Number of AI in SERVER = " + enemyList.Count);
+        Debug.Log("Num of WaypointPaths: " + waypointPathsList.Count);
+        //Debug.Log("Total Waypoints: " + totalWaypoints);
     }
 
 
@@ -162,7 +211,7 @@ public class Server_Demo : MonoBehaviour
         }
         else
         {
-            switch(packet_id)
+            switch (packet_id)
             {
                 case (byte)Packets_ID.CL_INFO:
                     OnReceivedClientNetInfo(peer.incomingGUID);
@@ -174,7 +223,7 @@ public class Server_Demo : MonoBehaviour
                     OnReceivedClientMovementData(peer.incomingGUID);
                     break;
             }
-           
+
 
         }
     }
@@ -280,7 +329,7 @@ public class Server_Demo : MonoBehaviour
 
         Debug.Log("[Server] Connection established " + connection.ipaddress);
         //peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
-      
+
         peer.SendPacket(connection, Packets_ID.CL_INFO, m_NetworkWriter);
     }
 
@@ -300,7 +349,7 @@ public class Server_Demo : MonoBehaviour
             }
         }
     }
-    
+
 
     private void OnReceivedClientMovementData(ulong guid)
     {
@@ -363,20 +412,43 @@ public class Server_Demo : MonoBehaviour
 
             SendToAll(guid, m_NetworkWriter, true);
             // peer.SendBroadcast(Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
-
         }
     }
     private void SendToAll(ulong guid, NetworkWriter _writer, bool broadcast)
     {
-        foreach(ulong guids in clients.Keys)
+        foreach (ulong guids in clients.Keys)
         {
-            if(broadcast)
+            if (broadcast)
             {
                 if (guids == guid)
                     continue;
             }
 
             peer.SendData(guids, Peer.Reliability.Reliable, 0, _writer);
+        }
+    }
+
+    private void DestroyEnemy(uint enemyID)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            foreach (EnemyAI enemy in enemyList)
+            {
+                if (enemy.pid == enemyID)
+                {
+
+                    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYENEMY);
+                    m_NetworkWriter.Write(enemyID);
+
+                    enemyList.Remove(enemy);
+                    Destroy(enemy.gameObject);
+                    Debug.Log("Destroying Enemy " + enemyID);
+                    foreach (ulong guids in clients.Keys)
+                    {
+                        peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+                    }
+                }
+            }
         }
     }
 
@@ -436,6 +508,14 @@ public class Server_Demo : MonoBehaviour
                         m_NetworkWriter.Write(playerObj.playerNum);
                         m_NetworkWriter.Write(playerObj.name);
                         //m_NetworkWriter.Write
+                    }
+
+                    m_NetworkWriter.Write(enemyList.Count);
+                    foreach (EnemyAI enemy in enemyList)
+                    {
+                        m_NetworkWriter.Write(enemy.pid);
+                        m_NetworkWriter.Write(enemy.ePosition);
+                        m_NetworkWriter.Write(enemy.eRotation);
                     }
                     peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
                     //  m_NetworkWriter.Send//sending
