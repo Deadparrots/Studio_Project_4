@@ -55,3 +55,5 @@ MonoBehaviour:
     type: 3}
   enemyReference: {fileID: 8793741656139258734, guid: 65188a3e767cf044687bd270a01be04c,
     type: 3}
+  healthPickupReference: {fileID: 3752942730893247769, guid: 73e938ff8a94aa248b1a0fae3d4899dd,
+    type: 3}

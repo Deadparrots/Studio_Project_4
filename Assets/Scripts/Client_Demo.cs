@@ -16,9 +16,11 @@ public class Client_Demo : MonoBehaviour
 
     [SerializeField] private GameObject playerReference;
     [SerializeField] private GameObject enemyReference;
+    [SerializeField] private GameObject healthPickupReference;
 
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
+    private List<PickupManager> pickupList = new List<PickupManager>();
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
     //private List<PickUpsManager> pickUpList = new List<PickUpsManager>();
@@ -391,6 +393,24 @@ public class Client_Demo : MonoBehaviour
                                 enemy.sm.SetCurrentState(currentState);
                                 break;
                             }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_SPAWNPICKUP:
+                    {
+                        uint pickupID = m_NetworkReader.ReadUInt32();
+                        int type = m_NetworkReader.ReadInt32();
+                        Vector3 position = m_NetworkReader.ReadVector3();
+
+
+                        if (type == 0)
+                        {
+                            GameObject pickupObject = Instantiate(healthPickupReference);
+                            PickupManager pickupManager = pickupObject.GetComponent<PickupManager>();
+                            pickupManager.pPosition = position;
+                            pickupManager.pid = pickupID;
+                            pickupList.Add(pickupManager);
                         }
                     }
                     break;

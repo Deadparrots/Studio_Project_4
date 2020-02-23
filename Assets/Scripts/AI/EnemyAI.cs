@@ -142,7 +142,7 @@ public class EnemyAI : MonoBehaviour
         {
             anim.SetBool("isWalking", false);
             anim.SetBool("isAttacking", false);
-            anim.SetBool("isDead", false);
+            anim.SetBool("isDead", true);
         }
 
     }

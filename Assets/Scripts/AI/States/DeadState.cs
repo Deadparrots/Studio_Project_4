@@ -7,6 +7,8 @@ using System;
 public class DeadState : State<EnemyAI>
 {
     public EnemyAI m_go;
+    float deathTimer = 10.0f;
+    float timer = 0;
     public DeadState(EnemyAI _gameObject, string stateID)
         : base(State<EnemyAI>(stateID))
     {
@@ -20,11 +22,19 @@ public class DeadState : State<EnemyAI>
 
     public override void Enter()
     {
-        // Send Message to destroy Enemy in clients
-        Server_Demo.Instance.DestroyEnemy(m_go.pid);
+        timer = deathTimer;
+        Server_Demo.Instance.spawnPickup(m_go.ePosition);
     }
     public override void Update(double dt)
     {
+        if (timer < 0.0f)
+        {
+            // Send Message to destroy Enemy in clients
+            Server_Demo.Instance.DestroyEnemy(m_go.pid);
+
+        }
+        else
+            timer -= Time.deltaTime;
     }
     public override void Exit()
     {

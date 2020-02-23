@@ -32,6 +32,33 @@ public class playerObject
         rotation_x = rotation_y = rotation_z = 0.0f;
     }
 }
+
+public class pickupObject
+{
+    public uint id;
+    public Vector3 position;
+    public int type;
+    //public float velocity_X;
+    //public float velocity_Y;
+    //public float velocity_Z;
+    //public int playerNum;
+    //public string name;
+    //public float rotation_x;
+    //public float rotation_y;
+    //public float rotation_z;
+
+    public pickupObject(uint _id)
+    {
+        //this.playerNum = 1;
+        position = new Vector3(0, 0, 0);
+        id = _id;
+        type = 0;
+        //name = "";
+        //velocity_X = velocity_Y = velocity_Z = 0.0f;
+        //rotation_x = rotation_y = rotation_z = 0.0f;
+    }
+}
+
 public class WaypointPath
 {
     public List<Transform> wayPoints = new List<Transform>();
@@ -49,6 +76,7 @@ public class Server_Demo : MonoBehaviour
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private uint playerID;
     private uint enemyID;
+    private uint pickupID;
     public List<WaypointPath> waypointPathsList = new List<WaypointPath>();
     const int MAX_PLAYERS = 4;
     int totalWaypoints = 0;
@@ -174,6 +202,13 @@ public class Server_Demo : MonoBehaviour
             ChangeScene("SP4");
         }
 
+        if (Input.GetKeyDown("f"))
+        {
+            //ChangeScene("Scene2");
+            //DestroyEnemy(2);
+            enemyList[0].sm.SetNextState("Dead");
+        }
+
         foreach (EnemyAI enemy in enemyList)
         {
             enemy.PlayerList.Clear();
@@ -182,8 +217,8 @@ public class Server_Demo : MonoBehaviour
                 enemy.PlayerList.Add(player);
             }
         }
-        Debug.Log("Number of AI in SERVER = " + enemyList.Count);
-        Debug.Log("Num of WaypointPaths: " + waypointPathsList.Count);
+        //Debug.Log("Number of AI in SERVER = " + enemyList.Count);
+        //Debug.Log("Num of WaypointPaths: " + waypointPathsList.Count);
         //Debug.Log("Total Waypoints: " + totalWaypoints);
     }
 
@@ -448,6 +483,28 @@ public class Server_Demo : MonoBehaviour
                         peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
                     }
                 }
+            }
+        }
+    }
+
+    public void spawnPickup(Vector3 position)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SPAWNPICKUP);
+            pickupObject pickup = new pickupObject(pickupID);
+            ++pickupID;
+            pickup.position = position;
+            
+            // TODO: Spawn random pickups
+            m_NetworkWriter.Write(pickup.id);
+            m_NetworkWriter.Write(pickup.type);
+            m_NetworkWriter.Write(position);
+
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
             }
         }
     }
