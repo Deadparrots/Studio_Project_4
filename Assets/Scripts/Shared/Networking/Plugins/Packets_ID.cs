@@ -16,7 +16,10 @@ public enum Packets_ID : byte
     ID_WELCOME,
     ID_INITIALSTATS,
     ID_CHANGESCENE,
-    ID_DESTROYENEMY
+    ID_DESTROYENEMY,
+    ID_DMGPLAYER,
+    ID_DMGENEMY,
+    ID_UPDATENEMY
 
 
     /* unused in demo

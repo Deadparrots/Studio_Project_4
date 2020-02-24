@@ -27,23 +27,46 @@ public class ChaseState : State<EnemyAI>
             m_go.sm.SetNextState("Dead");
         else
         {
-            float shortestDistanceSquared = float.MinValue;
-            uint closestPlayerID = 0;
-            foreach (playerObject player in m_go.PlayerList)
+            if(m_go.PlayerList.Count > 0)
             {
-                Vector3 playerPos = new Vector3(player.m_x, player.m_y, player.m_z);
-                float DistanceSquared = (playerPos - m_go.ePosition).sqrMagnitude;
-                if (DistanceSquared < shortestDistanceSquared)
+                float shortestDistanceSquared = float.MaxValue;
+                playerObject closestPlayer;
+                Vector3 playerPos = new Vector3(0, 0, 0);
+                foreach (playerObject player in m_go.PlayerList)
                 {
-                    shortestDistanceSquared = DistanceSquared;
-                    closestPlayerID = player.id;
+                    playerPos.Set(player.m_x, player.m_y, player.m_z);
+                    float DistanceSquared = (playerPos - m_go.ePosition).sqrMagnitude;
+                    if (DistanceSquared < shortestDistanceSquared)
+                    {
+                        shortestDistanceSquared = DistanceSquared;
+                        closestPlayer = player;
+                    }
+                }
+
+                Vector3 movementDirection = (playerPos - m_go.ePosition).normalized;
+                m_go.ePosition += movementDirection * (float)dt;
+                m_go.FaceTarget(playerPos);
+
+                if (shortestDistanceSquared > m_go.EngagementRangeSquared)
+                {
+                    m_go.sm.SetNextState("Patrol");
+                    m_go.WaypointIndex = m_go.GetNearestWaypointIndex();
+                }
+                else if (shortestDistanceSquared < m_go.AttackRangeSquared)
+                {
+                    m_go.sm.SetNextState("Attack");
                 }
             }
+            else
+            {
+                m_go.sm.SetNextState("Patrol");
+                m_go.WaypointIndex = m_go.GetNearestWaypointIndex();
+            }
+ 
         }
     }
     public override void Exit()
     {
-        throw new System.NotImplementedException();
     }
 
 
