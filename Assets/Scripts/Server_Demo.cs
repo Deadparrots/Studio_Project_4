@@ -612,9 +612,8 @@ public class Server_Demo : MonoBehaviour
                         m_NetworkWriter.Write(playerObj.rotation_x);
                         m_NetworkWriter.Write(playerObj.rotation_y);
                         m_NetworkWriter.Write(playerObj.rotation_z);
-                        m_NetworkWriter.Write(playerObj.playerNum);
+                        //m_NetworkWriter.Write(playerObj.playerNum);
                         m_NetworkWriter.Write(playerObj.name);
-                        //m_NetworkWriter.Write
                     }
 
                     m_NetworkWriter.Write(enemyList.Count);
