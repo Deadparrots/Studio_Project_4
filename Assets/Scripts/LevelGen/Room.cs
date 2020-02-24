@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class Room : MonoBehaviour
 {
-    public int SizeX, SizeY;
+    public int SizeX, SizeY; // Might change to a vector 2 for allowing weirder rooms.
+    public Vector2Int position;
     public List<Vector2Int> Connectors;
+    public List<bool> ConnectorsProcessed;
 
     public enum Rotation
     {
-        Up,
+        Up = 0,
+        Right,
         Down,
-        Left,
-        Right
+        Left
     }
-    public Rotation rotation;
+    public Rotation rotation = Rotation.Up;
 
     public List<Vector2Int> GetRotatedVectors()
     {
@@ -43,5 +45,27 @@ public class Room : MonoBehaviour
             }
         }
         return ret;
+    }
+
+    public Vector2Int GetRotatedVectorByIndex(int index)
+    {
+        switch (rotation)
+        {
+            case Rotation.Up:
+                return Connectors[index];
+            case Rotation.Down:
+                return Connectors[index] * -1;
+            case Rotation.Left:
+                return (new Vector2Int((Connectors[index].y > 0 ? -Connectors[index].y : Connectors[index].y), (Connectors[index].x > 0 ? Connectors[index].x : -Connectors[index].x)));
+            case Rotation.Right:
+                return new Vector2Int((Connectors[index].y > 0 ? Connectors[index].y : -Connectors[index].y), (Connectors[index].x > 0 ? -Connectors[index].x : Connectors[index].x));
+        }
+        return new Vector2Int(0,0);
+    }
+
+    private void Awake()
+    {
+        ConnectorsProcessed.Clear();
+        ConnectorsProcessed.AddRange(System.Linq.Enumerable.Repeat(false, Connectors.Count));
     }
 }
