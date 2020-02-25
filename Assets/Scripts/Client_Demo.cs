@@ -32,6 +32,7 @@ public class Client_Demo : MonoBehaviour
     private float delta = 0.0f;
     private string userName;
 
+    Camera m_MainCamera;
     private void Awake()
     {
         Instance = this;
@@ -217,7 +218,19 @@ public class Client_Demo : MonoBehaviour
                         playerObj.GetComponent<PlayerManager>().SetPlayer(true); ;
                         playersList.Add(playerObj.GetComponent<PlayerManager>());
 
-                        m_NetworkWriter.WritePacketID((byte)Packets_ID.CL_INFO);
+                        m_MainCamera = Camera.main;
+                        LockRelativePosition lrpScript = m_MainCamera.GetComponent<LockRelativePosition>();
+
+                        foreach(Transform child in playerObj.transform)
+                        {
+                            if(child.name == "Body")
+                            {
+                                lrpScript.Reference = child.gameObject;
+                            }
+                        }
+
+
+                            m_NetworkWriter.WritePacketID((byte)Packets_ID.CL_INFO);
                         m_NetworkWriter.Write(m_ClientNetInfo.name);
                         m_NetworkWriter.WritePackedUInt64(m_ClientNetInfo.local_id);
                         m_NetworkWriter.Write(m_ClientNetInfo.client_hwid);
@@ -249,6 +262,7 @@ public class Client_Demo : MonoBehaviour
                     uint id = m_NetworkReader.ReadUInt32();
                     PlayerManager mgr = playersList[0];
                     mgr.pid = id;
+                    mgr.position = m_NetworkReader.ReadVector3();
                     int playerCount = m_NetworkReader.ReadInt32();
 
                     for (int i = 0; i < playerCount; ++i)

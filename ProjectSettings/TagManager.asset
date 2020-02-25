@@ -7,6 +7,7 @@ TagManager:
   - UIMaster
   - Enemy
   - WaypointPath
+  - Spawnpoint
   layers:
   - Default
   - TransparentFX

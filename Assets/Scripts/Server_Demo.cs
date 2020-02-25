@@ -64,6 +64,17 @@ public class WaypointPath
     public List<Transform> wayPoints = new List<Transform>();
 }
 
+public struct SpawnPoint
+{
+    public bool active;
+    public Vector3 position;
+    public SpawnPoint(bool _active)
+    {
+        active = _active;
+        position = new Vector3(0,0,0);
+    }
+}
+
 
 public class Server_Demo : MonoBehaviour
 {
@@ -78,6 +89,7 @@ public class Server_Demo : MonoBehaviour
     private uint enemyID;
     private uint pickupID;
     public List<WaypointPath> waypointPathsList = new List<WaypointPath>();
+    public List<SpawnPoint> spawnPointList = new List<SpawnPoint>();
     const int MAX_PLAYERS = 4;
     int totalWaypoints = 0;
     private void Awake()
@@ -117,6 +129,17 @@ public class Server_Demo : MonoBehaviour
             enemy.WaypointIndex = 0;
             enemyList.Add(enemy);
             ++enemyID;
+        }
+
+        GameObject[] spawnPoints;
+        spawnPoints = GameObject.FindGameObjectsWithTag("Spawnpoint");
+
+        foreach(GameObject spawn in spawnPoints)
+        {
+            SpawnPoint spawnpoint = new SpawnPoint();
+            spawnpoint.active = true;
+            spawnpoint.position = spawn.transform.position;
+            spawnPointList.Add(spawnpoint);
         }
     }
 
@@ -593,7 +616,6 @@ public class Server_Demo : MonoBehaviour
                 connection.Info.local_id = m_NetworkReader.ReadPackedUInt64();
                 connection.Info.client_hwid = m_NetworkReader.ReadString();
                 connection.Info.client_version = m_NetworkReader.ReadString();
-                ++playerID;
 
                 Debug.Log("Sent");
 
@@ -601,6 +623,15 @@ public class Server_Demo : MonoBehaviour
                 {
                     m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_WELCOME);
                     m_NetworkWriter.Write(playerID);
+
+                    Vector3 zeroVector = new Vector3(0, 0, 0);
+
+                    if (playerID < MAX_PLAYERS && spawnPointList.Count >= playerID)
+                    {
+                        m_NetworkWriter.Write(spawnPointList[(int)playerID].position);
+                    }
+                    else
+                        m_NetworkWriter.Write(zeroVector);  // in case no spawn point was set
                     m_NetworkWriter.Write(clients.Count);
 
                     foreach (playerObject playerObj in clients.Values)
@@ -626,11 +657,14 @@ public class Server_Demo : MonoBehaviour
                     peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
                     //  m_NetworkWriter.Send//sending
                     //m_NetworkWriter.Reset();
-
+                    Vector3 position = spawnPointList[(int)playerID].position;
                     playerObject newObj = new playerObject(playerID);
                     newObj.playerNum = m_NetworkReader.ReadInt32();
+                    newObj.m_x = position.x;
+                    newObj.m_y = position.y;
+                    newObj.m_z = position.z;
                     clients.Add(guid, newObj);
-
+                    ++playerID;
                     Debug.Log("Added new guy : " + newObj.id);
                 }
                 //peer.SendPacket(connection, Packets_ID.NET_LOGIN, Reliability.Reliable, m_NetworkWriter);
