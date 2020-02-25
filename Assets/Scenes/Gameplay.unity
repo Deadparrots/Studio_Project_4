@@ -1523,7 +1523,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!136 &840274371
 CapsuleCollider:
@@ -1953,6 +1953,7 @@ PrefabInstance:
     - {fileID: 3071942332808269684, guid: 44e68ced12e2a6a45a8bec6868436558, type: 3}
     - {fileID: 3071942332398905925, guid: 44e68ced12e2a6a45a8bec6868436558, type: 3}
     - {fileID: 3071942333648599906, guid: 44e68ced12e2a6a45a8bec6868436558, type: 3}
+    - {fileID: 3071942333543522039, guid: 44e68ced12e2a6a45a8bec6868436558, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 44e68ced12e2a6a45a8bec6868436558, type: 3}
 --- !u!1 &1055810439
 GameObject:
