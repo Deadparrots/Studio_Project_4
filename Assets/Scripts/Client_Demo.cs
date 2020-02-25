@@ -41,7 +41,12 @@ public class Client_Demo : MonoBehaviour
     {
         userName = _name;
         Connect(_ip, _port);
-
+       //GetComponent<GameData>().inventory1 = 1;
+       //GetComponent<GameData>().inventory2 = 0;
+       //GetComponent<GameData>().inventorychoice = 1;
+       //GetComponent<GameData>().hp = 10;
+       //GetComponent<GameData>().money = 100;
+       //GetComponent<GameData>().revival = false;
     }
 
     public bool IsRunning
@@ -56,11 +61,14 @@ public class Client_Demo : MonoBehaviour
     protected void Update()
     {
         delta += Time.deltaTime;
-        if (Input.GetKeyDown("space"))
-        {
-
-        }
-
+        //if (Input.GetKeyDown(KeyCode.Alpha1))
+        //{
+        //    GetComponent<GameData>().inventorychoice = 1;
+        //}
+        //else if(Input.GetKeyDown(KeyCode.Alpha2))
+        //{
+        //    GetComponent<GameData>().inventorychoice = 2;
+        //}
         if (delta > 0.5f)
         {
             SendMovement();
@@ -149,6 +157,7 @@ public class Client_Demo : MonoBehaviour
                 OnReceivedPacket(b);
             }
         }
+
     }
 
 
