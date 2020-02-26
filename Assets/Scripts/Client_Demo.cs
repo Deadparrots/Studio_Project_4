@@ -22,7 +22,7 @@ public class Client_Demo : MonoBehaviour
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<PickupManager> pickupList = new List<PickupManager>();
-    private List<bulletObject> bulletList = new List<bulletObject>();
+    private List<BulletManager> bulletList = new List<BulletManager>();
 
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
@@ -473,8 +473,11 @@ public class Client_Demo : MonoBehaviour
                         Vector3 bulletPos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
                         Rigidbody gun = Instantiate(bulletReference) as Rigidbody;
                         gun.position = bulletPos;
+                        BulletManager bulletManager = gun.GetComponentInParent<BulletManager>();
                         Vector3 forward = m_NetworkReader.ReadVector3();
                         gun.AddForce(forward * 500);
+                        bulletManager.pid = bid;
+                        bulletList.Add(bulletManager);
                     }
                     break;
 
