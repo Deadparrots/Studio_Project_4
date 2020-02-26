@@ -14,6 +14,7 @@ public class LevelGenerator : MonoBehaviour
 
     private void Start()
     {
+        //Temp
         gridsize = 10;
         Generate(2);
     }

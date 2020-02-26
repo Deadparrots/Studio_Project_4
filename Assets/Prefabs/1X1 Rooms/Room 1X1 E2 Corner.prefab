@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 3344731023368795164}
   - component: {fileID: 3344731023368795165}
   m_Layer: 0
-  m_Name: Cube (2)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -323,6 +323,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3344731024441804272}
   - component: {fileID: 3559649008899865244}
+  - component: {fileID: 5237921654078106539}
   m_Layer: 0
   m_Name: Room 1X1 E2 Corner
   m_TagString: Untagged
@@ -366,6 +367,37 @@ MonoBehaviour:
   ConnectorsProcessed: 0000
   ConnectorDirection: 0300000002000000
   rotation: 0
+--- !u!114 &5237921654078106539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3344731024441804273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 291f7ceb8684837429e7e7062e7f5f62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SizeX: 1
+  SizeY: 1
+  position: {x: 0, y: 0}
+  rotation: 0
+  Connectors:
+  - processed: 0
+    rotatedpositions:
+    - {x: 0, y: 0}
+    - {x: 0, y: 0}
+    - {x: 0, y: 0}
+    - {x: 0, y: 0}
+    Exit: 02000000030000000000000001000000
+  - processed: 0
+    rotatedpositions:
+    - {x: 0, y: 0}
+    - {x: 0, y: 0}
+    - {x: 0, y: 0}
+    - {x: 0, y: 0}
+    Exit: 03000000000000000100000002000000
 --- !u!1 &3344731025016466080
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +411,7 @@ GameObject:
   - component: {fileID: 3344731025016466085}
   - component: {fileID: 3344731025016466082}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -595,7 +627,7 @@ GameObject:
   - component: {fileID: 8804037810100069296}
   - component: {fileID: 26496533954426121}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -687,7 +719,7 @@ GameObject:
   - component: {fileID: 8055273057797621610}
   - component: {fileID: 4267162374598260722}
   m_Layer: 0
-  m_Name: Cube (2)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
