@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3661191397941416431}
-  - component: {fileID: 3661191397941416430}
   m_Layer: 0
   m_Name: LevelGenerator
   m_TagString: Untagged
@@ -31,24 +30,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3661191397941416430
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3661191397941416429}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51ec90d8c9a6ac141bb0030f1c5803ae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rooms:
-  - {fileID: 4706949707385791448, guid: 662c41bb1feaa8c408958e957e50d032, type: 3}
-  - {fileID: 6689363227303635355, guid: 6c8c19ba74c75e4449003d8969ace302, type: 3}
-  - {fileID: 3344731024441804273, guid: 3fa749a42adf47e499e724ec97278777, type: 3}
-  - {fileID: 3218942784404283866, guid: fa47481381d949140b424af5b6236d41, type: 3}
-  - {fileID: 5746732846537659475, guid: 6b9dc6313d0539044bec150919a8848c, type: 3}
-  - {fileID: 114622088714617398, guid: 84dbaf7cc55ffb241be92dd1aad36de3, type: 3}
-  - {fileID: 3062646294672081530, guid: 61a4529c86992254c89f3cf0b5144125, type: 3}
-  - {fileID: 7165919711028633072, guid: f7a6e239c240018469a78a2ee9cf3957, type: 3}
