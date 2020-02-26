@@ -17,5 +17,6 @@ public class LockRelativePosition : MonoBehaviour
     {
         Vector3 newPos = Reference.transform.position + Position;
         transform.position = newPos;
+        transform.eulerAngles = new Vector3(45, 0, 0);
     }
 }

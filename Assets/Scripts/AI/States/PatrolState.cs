@@ -24,6 +24,7 @@ public class PatrolState : State<EnemyAI>
     public override void Update(double dt)
     {
         Vector3 movementDirection = (m_go.WayPoints[m_go.WaypointIndex].position - m_go.ePosition).normalized;
+        movementDirection.y = 0;
         m_go.ePosition += movementDirection * (float)dt;
         m_go.FaceTarget(m_go.WayPoints[m_go.WaypointIndex].position);
 

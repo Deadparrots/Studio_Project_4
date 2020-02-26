@@ -44,6 +44,7 @@ public class ChaseState : State<EnemyAI>
                 }
 
                 Vector3 movementDirection = (playerPos - m_go.ePosition).normalized;
+                movementDirection.y = 0;
                 m_go.ePosition += movementDirection * (float)dt;
                 m_go.FaceTarget(playerPos);
 

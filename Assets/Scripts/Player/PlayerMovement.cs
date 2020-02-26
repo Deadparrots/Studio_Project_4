@@ -96,23 +96,24 @@ public class PlayerMovement : MonoBehaviour
             }
 
 
-            if (Input.GetKey("up"))
-            {
-                print("up arrow key is held down");
-                rotation.y += movementSpeed * Time.deltaTime;
+            //if (Input.GetKey("up"))
+            //{
+            //    print("up arrow key is held down");
+            //    rotation.y += movementSpeed * Time.deltaTime;
 
-                if (rotation.y > 360)
-                    rotation.y = 0;
-            }
+            //    if (rotation.y > 360)
+            //        rotation.y = 0;
+            //}
 
-            else if (Input.GetKey("down"))
-            {
-                print("down arrow key is held down");
-                rotation.y -= movementSpeed * Time.deltaTime;
+            //else if (Input.GetKey("down"))
+            //{
+            //    print("down arrow key is held down");
+            //    rotation.y -= movementSpeed * Time.deltaTime;
 
-                if (rotation.y < 0)
-                    rotation.y = 360;
-            }
+            //    if (rotation.y < 0)
+            //        rotation.y = 360;
+            //}
+            rotation.y = Globals.MouseToCenterAngle;
         }
     }
     private void FixedUpdate()

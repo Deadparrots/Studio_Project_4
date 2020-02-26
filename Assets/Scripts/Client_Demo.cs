@@ -16,9 +16,11 @@ public class Client_Demo : MonoBehaviour
 
     [SerializeField] private GameObject playerReference;
     [SerializeField] private GameObject enemyReference;
+    [SerializeField] private GameObject healthPickupReference;
 
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
+    private List<PickupManager> pickupList = new List<PickupManager>();
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
     //private List<PickUpsManager> pickUpList = new List<PickUpsManager>();
@@ -30,6 +32,7 @@ public class Client_Demo : MonoBehaviour
     private float delta = 0.0f;
     private string userName;
 
+    Camera m_MainCamera;
     private void Awake()
     {
         Instance = this;
@@ -39,7 +42,12 @@ public class Client_Demo : MonoBehaviour
     {
         userName = _name;
         Connect(_ip, _port);
-
+       //GetComponent<GameData>().inventory1 = 1;
+       //GetComponent<GameData>().inventory2 = 0;
+       //GetComponent<GameData>().inventorychoice = 1;
+       //GetComponent<GameData>().hp = 10;
+       //GetComponent<GameData>().money = 100;
+       //GetComponent<GameData>().revival = false;
     }
 
     public bool IsRunning
@@ -54,11 +62,14 @@ public class Client_Demo : MonoBehaviour
     protected void Update()
     {
         delta += Time.deltaTime;
-        if (Input.GetKeyDown("space"))
-        {
-
-        }
-
+        //if (Input.GetKeyDown(KeyCode.Alpha1))
+        //{
+        //    GetComponent<GameData>().inventorychoice = 1;
+        //}
+        //else if(Input.GetKeyDown(KeyCode.Alpha2))
+        //{
+        //    GetComponent<GameData>().inventorychoice = 2;
+        //}
         if (delta > 0.5f)
         {
             SendMovement();
@@ -147,6 +158,7 @@ public class Client_Demo : MonoBehaviour
                 OnReceivedPacket(b);
             }
         }
+
     }
 
 
@@ -206,7 +218,19 @@ public class Client_Demo : MonoBehaviour
                         playerObj.GetComponent<PlayerManager>().SetPlayer(true); ;
                         playersList.Add(playerObj.GetComponent<PlayerManager>());
 
-                        m_NetworkWriter.WritePacketID((byte)Packets_ID.CL_INFO);
+                        m_MainCamera = Camera.main;
+                        LockRelativePosition lrpScript = m_MainCamera.GetComponent<LockRelativePosition>();
+
+                        foreach(Transform child in playerObj.transform)
+                        {
+                            if(child.name == "Body")
+                            {
+                                lrpScript.Reference = child.gameObject;
+                            }
+                        }
+
+
+                            m_NetworkWriter.WritePacketID((byte)Packets_ID.CL_INFO);
                         m_NetworkWriter.Write(m_ClientNetInfo.name);
                         m_NetworkWriter.WritePackedUInt64(m_ClientNetInfo.local_id);
                         m_NetworkWriter.Write(m_ClientNetInfo.client_hwid);
@@ -238,6 +262,7 @@ public class Client_Demo : MonoBehaviour
                     uint id = m_NetworkReader.ReadUInt32();
                     PlayerManager mgr = playersList[0];
                     mgr.pid = id;
+                    mgr.position = m_NetworkReader.ReadVector3();
                     int playerCount = m_NetworkReader.ReadInt32();
 
                     for (int i = 0; i < playerCount; ++i)
@@ -391,6 +416,24 @@ public class Client_Demo : MonoBehaviour
                                 enemy.sm.SetCurrentState(currentState);
                                 break;
                             }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_SPAWNPICKUP:
+                    {
+                        uint pickupID = m_NetworkReader.ReadUInt32();
+                        int type = m_NetworkReader.ReadInt32();
+                        Vector3 position = m_NetworkReader.ReadVector3();
+
+
+                        if (type == 0)
+                        {
+                            GameObject pickupObject = Instantiate(healthPickupReference);
+                            PickupManager pickupManager = pickupObject.GetComponent<PickupManager>();
+                            pickupManager.pPosition = position;
+                            pickupManager.pid = pickupID;
+                            pickupList.Add(pickupManager);
                         }
                     }
                     break;
