@@ -635,6 +635,7 @@ MonoBehaviour:
   - {x: -1, y: 0}
   - {x: 2, y: 1}
   ConnectorsProcessed: 0000
+  ConnectorDirection: 0300000001000000
   rotation: 0
 --- !u!1 &5746732847567118755
 GameObject:

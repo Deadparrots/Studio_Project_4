@@ -14,8 +14,8 @@ public class LevelGenerator : MonoBehaviour
 
     private void Start()
     {
-        gridsize = 6;
-        Generate(0);
+        gridsize = 10;
+        Generate(2);
     }
 
     public void Generate(int seed)
@@ -63,13 +63,15 @@ public class LevelGenerator : MonoBehaviour
 
     private void Generate(Room room)
     {
+
         for (int i = 0; room.Connectors.Count > i;i++)
         {
             if (room.ConnectorsProcessed[i])
                 continue;
+
             int connectorPositionX = (room.GetRotatedVectorByIndex(i) + room.position).x;
             int connectorPositionY = (room.GetRotatedVectorByIndex(i) + room.position).y;
-            if (connectorPositionX > gridsize || connectorPositionY > gridsize || 0 > connectorPositionX || 0 > connectorPositionY ) // if position will be out of bounds
+            if (connectorPositionX > gridsize || connectorPositionY > gridsize || 0 > connectorPositionX || 0 > connectorPositionY) // if position will be out of bounds
             {
                 continue; //replace with adding a wall
             }
@@ -85,6 +87,9 @@ public class LevelGenerator : MonoBehaviour
                 randomroom = randomRoom.GetComponent<Room>();
 
                 randomroom.position = new Vector2Int(connectorPositionX, connectorPositionY);
+
+                if (randomroom.SizeY + randomroom.position.y > gridsize || randomroom.SizeX + randomroom.position.x > gridsize)
+                    continue;
 
                 for (int mapy = 0; randomroom.SizeY > mapy; mapy++) // overwrites on map
                 {
@@ -105,7 +110,7 @@ public class LevelGenerator : MonoBehaviour
 
                 if (loopbreaker > 8)
                 {
-                    //Destroy(randomRoom)
+                    Destroy(randomRoom);
                     break;
                 }
                 loopbreaker++;
@@ -121,7 +126,7 @@ public class LevelGenerator : MonoBehaviour
                             tempMp = true;
                             map[((mapy + randomroom.position.y) * gridsize) + mapx + randomroom.position.x] = tempMp;
                         }
-
+                       
                     }
                     break;
                 }
@@ -132,13 +137,18 @@ public class LevelGenerator : MonoBehaviour
 
             }
 
+            bool freezeRotation = false; // using this to freeze further rotations;
             for (int numrotations = 0; 4 > numrotations; numrotations++) // Here the rotation and connectors from the new one should be settled
             {
                 randomroom.rotation = (Room.Rotation)numrotations;
 
                 for (int ConnectorCounter = 0; randomroom.Connectors.Count > ConnectorCounter;ConnectorCounter++)
                 {
-                    if (randomroom.GetRotatedVectorByIndex(ConnectorCounter) + room.GetRotatedVectorByIndex(i) == Vector2Int.zero)
+
+                    if (randomroom.GetRotatedVectorByIndex(ConnectorCounter) + room.GetRotatedVectorByIndex(i) == Vector2Int.zero || 
+                        (room.SameSize(randomroom) && (randomroom.SizeX == 2 && randomroom.SizeY == 2) 
+                        && (randomroom.GetRotatedVectorByIndex(ConnectorCounter) + room.GetRotatedVectorByIndex(i) == new Vector2Int(1,1))
+                        && Room.Facing(room,randomroom, i, ConnectorCounter)))
                     {
                         //randomRoom = Instantiate(randomRoom);
                         randomRoom.transform.position = GetPosition(randomroom.position.x, randomroom.position.y);
@@ -154,8 +164,12 @@ public class LevelGenerator : MonoBehaviour
                         Debug.Log("Generated Room:" + randomRoom.name + " at " + randomroom.position);
                         Debug.Log("Room has a rotation of" + randomroom.rotation.ToString());
                         Generate(randomroom);
+                        freezeRotation = true;
+                        
                     }
                 }
+                if (freezeRotation)
+                    break;
             }
 
 
