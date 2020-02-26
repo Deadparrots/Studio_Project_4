@@ -680,43 +680,45 @@ public class Server_Demo : MonoBehaviour
 
                     Vector3 zeroVector = new Vector3(0, 0, 0);
 
-                    if (playerID < MAX_PLAYERS && spawnPointList.Count >= playerID)
-                    {
-                        m_NetworkWriter.Write(spawnPointList[(int)playerID].position);
-                    }
-                    else
-                        m_NetworkWriter.Write(zeroVector);  // in case no spawn point was set
-                    m_NetworkWriter.Write(clients.Count);
+                    // TODO: move to function that inits gameplay stuff
+                    //if (playerID < MAX_PLAYERS && spawnPointList.Count >= playerID)
+                    //{
+                    //    m_NetworkWriter.Write(spawnPointList[(int)playerID].position);
+                    //}
+                    //else
+                    //m_NetworkWriter.Write(zeroVector);  // in case no spawn point was set
 
-                    foreach (playerObject playerObj in clients.Values)
-                    {
-                        m_NetworkWriter.Write(playerObj.id);
-                        m_NetworkWriter.Write(playerObj.m_x);
-                        m_NetworkWriter.Write(playerObj.m_y);
-                        m_NetworkWriter.Write(playerObj.m_z);
-                        m_NetworkWriter.Write(playerObj.rotation_x);
-                        m_NetworkWriter.Write(playerObj.rotation_y);
-                        m_NetworkWriter.Write(playerObj.rotation_z);
-                        //m_NetworkWriter.Write(playerObj.playerNum);
-                        m_NetworkWriter.Write(playerObj.name);
-                    }
+                    //m_NetworkWriter.Write(clients.Count);
 
-                    m_NetworkWriter.Write(enemyList.Count);
-                    foreach (EnemyAI enemy in enemyList)
-                    {
-                        m_NetworkWriter.Write(enemy.pid);
-                        m_NetworkWriter.Write(enemy.ePosition);
-                        m_NetworkWriter.Write(enemy.eRotation);
-                    }
+                    //foreach (playerObject playerObj in clients.Values)
+                    //{
+                    //    m_NetworkWriter.Write(playerObj.id);
+                    //    m_NetworkWriter.Write(playerObj.m_x);
+                    //    m_NetworkWriter.Write(playerObj.m_y);
+                    //    m_NetworkWriter.Write(playerObj.m_z);
+                    //    m_NetworkWriter.Write(playerObj.rotation_x);
+                    //    m_NetworkWriter.Write(playerObj.rotation_y);
+                    //    m_NetworkWriter.Write(playerObj.rotation_z);
+                    //    //m_NetworkWriter.Write(playerObj.playerNum);
+                    //    m_NetworkWriter.Write(playerObj.name);
+                    //}
+
+                    //m_NetworkWriter.Write(enemyList.Count);
+                    //foreach (EnemyAI enemy in enemyList)
+                    //{
+                    //    m_NetworkWriter.Write(enemy.pid);
+                    //    m_NetworkWriter.Write(enemy.ePosition);
+                    //    m_NetworkWriter.Write(enemy.eRotation);
+                    //}
                     peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
                     //  m_NetworkWriter.Send//sending
                     //m_NetworkWriter.Reset();
-                    Vector3 position = spawnPointList[(int)playerID].position;
+                    //Vector3 position = spawnPointList[(int)playerID].position;
                     playerObject newObj = new playerObject(playerID);
                     newObj.playerNum = m_NetworkReader.ReadInt32();
-                    newObj.m_x = position.x;
-                    newObj.m_y = position.y;
-                    newObj.m_z = position.z;
+                    newObj.m_x = zeroVector.x;
+                    newObj.m_y = zeroVector.y;
+                    newObj.m_z = zeroVector.z;
                     clients.Add(guid, newObj);
                     ++playerID;
                     Debug.Log("Added new guy : " + newObj.id);

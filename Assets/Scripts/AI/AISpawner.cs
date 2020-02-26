@@ -21,9 +21,11 @@ public class AISpawner : MonoBehaviour
         if(timer < spawnCooldown)
         {
             // spawn ai
-            EnemyAI newAI = new EnemyAI();
-            newAI.gameObject.transform.position = gameObject.transform.position;
-            timer = spawnCooldown;
+            //EnemyAI newAI = new EnemyAI();
+            //newAI.gameObject.transform.position = gameObject.transform.position;
+            //timer = spawnCooldown;
+
+            // Ask server call spawn AI
         }
         else
         {

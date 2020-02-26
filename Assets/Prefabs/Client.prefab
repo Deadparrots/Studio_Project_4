@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2747524894602857510}
   - component: {fileID: 2747524894602857509}
+  - component: {fileID: 2491912384217962079}
   m_Layer: 0
   m_Name: Client
   m_TagString: Untagged
@@ -59,8 +60,15 @@ MonoBehaviour:
     type: 3}
   bulletReference: {fileID: 6957303512602015903, guid: 81c779ff52394b44e8e0521037712608,
     type: 3}
-  HP: {fileID: 8816388361018554509, guid: 848ceb082e291b24eae3f1b7ebd36e75, type: 3}
-  ScoreText: {fileID: 4599509361540565391, guid: ab1dca5d38000d747ae1d7e8ed4d6976,
-    type: 3}
-  MoneyText: {fileID: 481149344036070894, guid: c0db0c4dd8c5c60428a1e7be51e47169,
-    type: 3}
+--- !u!114 &2491912384217962079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2747524894602857508}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1f20b4fc0cc8e0478a922d0b58fb347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
