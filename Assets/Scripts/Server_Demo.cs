@@ -33,29 +33,27 @@ public class playerObject
     }
 }
 
+public class bulletObject
+{
+    public uint id;
+    public Vector3 position;
+    public bulletObject(uint _id)
+    {
+        position = new Vector3(0, 0, 0);
+        id = _id;
+    }
+}
 public class pickupObject
 {
     public uint id;
     public Vector3 position;
     public int type;
-    //public float velocity_X;
-    //public float velocity_Y;
-    //public float velocity_Z;
-    //public int playerNum;
-    //public string name;
-    //public float rotation_x;
-    //public float rotation_y;
-    //public float rotation_z;
 
     public pickupObject(uint _id)
     {
-        //this.playerNum = 1;
         position = new Vector3(0, 0, 0);
         id = _id;
         type = 0;
-        //name = "";
-        //velocity_X = velocity_Y = velocity_Z = 0.0f;
-        //rotation_x = rotation_y = rotation_z = 0.0f;
     }
 }
 
@@ -85,6 +83,7 @@ public class Server_Demo : MonoBehaviour
     public Text Info;
     private Dictionary<ulong, playerObject> clients = new Dictionary<ulong, playerObject>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
+    private List<bulletObject> bullets = new List<bulletObject>();
     private uint playerID;
     private uint enemyID;
     private uint pickupID;
@@ -280,6 +279,9 @@ public class Server_Demo : MonoBehaviour
                 case (byte)Packets_ID.ID_MOVEMENT:
                     OnReceivedClientMovementData(peer.incomingGUID);
                     break;
+                case (byte)Packets_ID.ID_SHOOTBULLET:
+                    OnReceivedShotData(peer.incomingGUID);
+                    break;
             }
 
 
@@ -408,6 +410,29 @@ public class Server_Demo : MonoBehaviour
         }
     }
 
+    private void OnReceivedShotData(ulong guid)
+    {
+        playerObject player = clients[guid];
+        bulletObject tempObj = new bulletObject(player.id);
+        tempObj.position.x = m_NetworkReader.ReadFloat();
+        tempObj.position.y = m_NetworkReader.ReadFloat();
+        tempObj.position.z = m_NetworkReader.ReadFloat();
+        Vector3 forward = m_NetworkReader.ReadVector3();
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOOTBULLET);
+            m_NetworkWriter.Write(tempObj.id);
+            m_NetworkWriter.Write(tempObj.position.x);
+            m_NetworkWriter.Write(tempObj.position.y);
+            m_NetworkWriter.Write(tempObj.position.z);
+            m_NetworkWriter.Write(forward);
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
+    }
 
     private void OnReceivedClientMovementData(ulong guid)
     {

@@ -24,7 +24,7 @@ public class EnemyAI : MonoBehaviour
     private int currentWaypointIndex;
     private float m_fDistanceTolerance = 1.0f;
     private float engagementRangeSquared = 100.0f;
-    private float attackRangeSquared = 10.0f;
+    private float attackRangeSquared = 5.0f;
     private int lastWaypointIndex;
 
 

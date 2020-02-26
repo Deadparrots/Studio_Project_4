@@ -21,8 +21,8 @@ public enum Packets_ID : byte
     ID_DMGENEMY,
     ID_UPDATENEMY,
     ID_SPAWNPICKUP,
-    ID_DESTROYPICKUP
-
+    ID_DESTROYPICKUP,
+    ID_SHOOTBULLET,
 
     /* unused in demo
     NET_SERVER_INFO,

@@ -20,29 +20,16 @@ public class CollisionCheck : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        //Debug.Log(gameObject.name + " Collided with "+ collision.gameObject.name);
-
-        //if(gameObject.name == "ShipObj(Clone)")
-        //{
-        ////    Debug.Log("moving");
-        //    gameObject.GetComponent<ShipMovement>().pVelocity = collision.gameObject.GetComponent<ShipMovement>().pVelocity;
-        //    return;
-        //}
-
-        //if(collision.gameObject.name == "ShotSprite")
-        //{
-        //    Debug.Log("HIT");
-        //    if (collision.gameObject.GetComponent<ShotMovement>().source == null) //prevents first collision, supposedly its parent ship
-        //    {
-        //        collision.gameObject.GetComponent<ShotMovement>().source = gameObject; // Gameobject will be a ship
-        //    }
-        //    if (collision.gameObject.GetComponent<ShotMovement>().source != gameObject) //TODO: Replace with a message to delete
-        //    {
-        //        Client_Demo.Instance.SendShipDeleteRequest(gameObject.GetComponentInParent<ShipManager>());
-        //        Client_Demo.Instance.SendShotDeleteRequest(collision.gameObject);
-        //    }
-        //    return;
-        //}
+        if(collision.gameObject.tag.Equals("EnemyWeapon"))
+        {
+            if(gameObject.name == "Player(Clone)")
+            {
+                PlayerManager player = gameObject.GetComponent<PlayerManager>();
+                // Call server to deal weapon dmg to player
+                // TODO: CHANGE THE DMG TO REFERENCE FROM WEAPONS DMG STAT
+                Server_Demo.Instance.DmgPlayer(player.pid, 25.0f);
+            }
+        }
     }
    
 }
