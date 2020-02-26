@@ -20,7 +20,7 @@ public class Weaponfire : MonoBehaviour
             }
        // }
     }
-    void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter3D(Collision collision)
     {
         Debug.Log("hit");
        // if ((bullets.GetComponent<GameData>().inventory1 == 1 && bullets.GetComponent<GameData>().inventorychoice == 1) || (bullets.GetComponent<GameData>().inventorychoice == 2 && bullets.GetComponent<GameData>().inventory2 == 1))
