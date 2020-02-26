@@ -17,12 +17,13 @@ public class Client_Demo : MonoBehaviour
     [SerializeField] private GameObject playerReference;
     [SerializeField] private GameObject enemyReference;
     [SerializeField] private GameObject healthPickupReference;
-    [SerializeField] private Rigidbody bulletReference;
+    [SerializeField] private GameObject bulletReference;
+
 
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<PickupManager> pickupList = new List<PickupManager>();
-    private List<bulletObject> bulletList = new List<bulletObject>();
+    private List<BulletManager> bulletList = new List<BulletManager>();
 
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
@@ -35,7 +36,6 @@ public class Client_Demo : MonoBehaviour
     private float delta = 0.0f;
     private string userName;
     Camera m_MainCamera;
-    private Transform gun;
 
     private void Awake()
     {
@@ -187,7 +187,7 @@ public class Client_Demo : MonoBehaviour
             }
         }
 
-        Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
+        //Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
     }
 
 
@@ -437,6 +437,7 @@ public class Client_Demo : MonoBehaviour
                         Vector3 position = m_NetworkReader.ReadVector3();
                         Vector3 rotation = m_NetworkReader.ReadVector3();
                         string currentState = m_NetworkReader.ReadString();
+                        float hp = m_NetworkReader.ReadFloat();
                         foreach (EnemyAI enemy in enemyList)
                         {
                             if (enemy.pid == enemyID)
@@ -444,6 +445,8 @@ public class Client_Demo : MonoBehaviour
                                 enemy.ePosition = position;
                                 enemy.gameObject.transform.eulerAngles = rotation;
                                 enemy.sm.SetCurrentState(currentState);
+                                enemy.hp = hp;
+                                Debug.Log("Enemy HP: " + hp);
                                 break;
                             }
                         }
@@ -469,12 +472,32 @@ public class Client_Demo : MonoBehaviour
                     break;
                 case (byte)Packets_ID.ID_SHOOTBULLET:
                     {
-                        uint bid = m_NetworkReader.ReadUInt32();
+                        uint bid = m_NetworkReader.ReadUInt32();    // bulletid
+                        uint boid = m_NetworkReader.ReadUInt32();   // ownerid
                         Vector3 bulletPos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
-                        Rigidbody gun = Instantiate(bulletReference) as Rigidbody;
-                        gun.position = bulletPos;
+                        GameObject bullet = Instantiate(bulletReference);
+                        Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
+                        bulletRigidbody.position = bulletPos;
+                        BulletManager bulletManager = bullet.GetComponent<BulletManager>();
                         Vector3 forward = m_NetworkReader.ReadVector3();
-                        gun.AddForce(forward * 500);
+                        bulletRigidbody.AddForce(forward * 500);
+                        bulletManager.pid = bid;
+                        bulletManager.ownerID = boid;
+                        bulletList.Add(bulletManager);
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_DESTROYBULLET:
+                    {
+                        uint bid = m_NetworkReader.ReadUInt32();
+
+                        foreach(BulletManager bullet in bulletList)
+                        {
+                            if(bullet.pid == bid)
+                            {
+                                Destroy(bullet.gameObject);
+                            }
+                        }
                     }
                     break;
 
