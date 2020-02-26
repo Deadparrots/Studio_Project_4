@@ -17,10 +17,13 @@ public class Client_Demo : MonoBehaviour
     [SerializeField] private GameObject playerReference;
     [SerializeField] private GameObject enemyReference;
     [SerializeField] private GameObject healthPickupReference;
+    [SerializeField] private Rigidbody bulletReference;
 
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<PickupManager> pickupList = new List<PickupManager>();
+    private List<bulletObject> bullets = new List<bulletObject>();
+
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
     //private List<PickUpsManager> pickUpList = new List<PickUpsManager>();
@@ -31,8 +34,9 @@ public class Client_Demo : MonoBehaviour
     private ulong serveruid = 0;
     private float delta = 0.0f;
     private string userName;
-
     Camera m_MainCamera;
+    private Transform gun;
+
     private void Awake()
     {
         Instance = this;
@@ -75,9 +79,25 @@ public class Client_Demo : MonoBehaviour
             SendMovement();
             delta = 0;
         }
-
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            Sendgun();
+        }
     }
-
+    private void Sendgun()
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            PlayerManager me = playersList[0];
+            if (me == null)
+                return;
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOOTBULLET);
+            m_NetworkWriter.Write(me.position.x);
+            m_NetworkWriter.Write(me.position.y);
+            m_NetworkWriter.Write(me.position.z);
+            m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
+        }
+    }
     private void SendMovement()
     {
         if (m_NetworkWriter.StartWritting())
@@ -435,6 +455,29 @@ public class Client_Demo : MonoBehaviour
                             pickupManager.pid = pickupID;
                             pickupList.Add(pickupManager);
                         }
+                    }
+                    break;
+                case (byte)Packets_ID.ID_SHOOTBULLET:
+                    {
+                        uint bid = m_NetworkReader.ReadUInt32();
+                        Vector3 playerpos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                        Rigidbody gun = Instantiate(bulletReference) as Rigidbody;
+                        gun.position = playerpos;
+                        foreach (PlayerManager player in playersList)
+                        {
+                            if(player.pid == bid)
+                            {
+                                Debug.Log("bangest");
+                                foreach (Transform child in player.transform)
+                                {
+                                    if (child.name == "Body")
+                                    {
+                                        gun.AddForce(child.gameObject.transform.forward * 500);
+                                    }
+                                }
+                            }
+                        }
+                       
                     }
                     break;
 
