@@ -22,7 +22,7 @@ public class Client_Demo : MonoBehaviour
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<PickupManager> pickupList = new List<PickupManager>();
-    private List<bulletObject> bullets = new List<bulletObject>();
+    private List<bulletObject> bulletList = new List<bulletObject>();
 
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
@@ -475,9 +475,6 @@ public class Client_Demo : MonoBehaviour
                         gun.position = bulletPos;
                         Vector3 forward = m_NetworkReader.ReadVector3();
                         gun.AddForce(forward * 500);
-                        //TODO: ADD TO LIST, assign ID to bullet
-
-
                     }
                     break;
 
