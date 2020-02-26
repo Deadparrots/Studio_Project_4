@@ -159,6 +159,7 @@ public class Client_Demo : MonoBehaviour
             }
         }
 
+        Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
     }
 
 
@@ -379,6 +380,7 @@ public class Client_Demo : MonoBehaviour
                             if (player.pid == playerID)
                             {
                                 Debug.Log(dmg + "dmg dealt to player " + playerID);
+                                player.hp -= dmg;
                                 break;
                             }
                         }

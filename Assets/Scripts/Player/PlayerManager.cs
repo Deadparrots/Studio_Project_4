@@ -9,10 +9,17 @@ public class PlayerManager : MonoBehaviour
     public TextMesh childName;
     public TextMesh scoreText;
     private PlayerMovement childScript;
+    private float health;
     public uint pid
     {
         get { return id; }
         set { id = value; }
+    }
+
+    public float hp
+    {
+        get { return health; }
+        set { health = value; }
     }
 
     public Vector3 pRotation
@@ -78,7 +85,7 @@ public class PlayerManager : MonoBehaviour
     protected void Awake()
     {
         childScript = GetComponentInChildren<PlayerMovement>();
-
+        health = 100.0f;
     }
     private void Update()
     {
