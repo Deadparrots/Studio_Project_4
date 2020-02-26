@@ -19,6 +19,7 @@ public class Client_Demo : MonoBehaviour
     [SerializeField] private GameObject healthPickupReference;
     [SerializeField] private GameObject bulletReference;
 
+
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<PickupManager> pickupList = new List<PickupManager>();
@@ -35,7 +36,6 @@ public class Client_Demo : MonoBehaviour
     private float delta = 0.0f;
     private string userName;
     Camera m_MainCamera;
-    private Transform gun;
 
     private void Awake()
     {
