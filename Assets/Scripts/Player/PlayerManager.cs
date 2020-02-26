@@ -40,6 +40,11 @@ public class PlayerManager : MonoBehaviour
         set { childPlayer.transform.position = value; }
     }
 
+    public Vector3 GetDefaultScale()
+    {
+        return childScript.GetDefScale();
+    }
+
     public void SetPlayer(bool _boolean)
     {
         Debug.Log("player set!!");

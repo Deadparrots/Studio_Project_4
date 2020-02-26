@@ -18,6 +18,7 @@ public class MainMenuManager : MonoBehaviour
     public void GoToConnectionScene()
     {
         Client_Demo.Instance.GetSceneManager().ToConnectScreen();
+        Client_Demo.Instance.GetConnectionSceneInfo();
     }
 
     public void Exit()

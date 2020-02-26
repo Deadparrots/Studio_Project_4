@@ -19,7 +19,8 @@ public class playerObject
     public float rotation_x;
     public float rotation_y;
     public float rotation_z;
-
+    public bool inConnectionScene;
+    public bool inGameplayScene;
     public playerObject(uint _id)
     {
         this.playerNum = 1;
@@ -285,6 +286,9 @@ public class Server_Demo : MonoBehaviour
                 case (byte)Packets_ID.ID_SHOOTBULLET:
                     OnReceivedShotData(peer.incomingGUID);
                     break;
+                case (byte)Packets_ID.ID_GETCONNECTSCENEINFO:
+                    SendConnectionSceneInfo(peer.incomingGUID);
+                    break;
             }
 
 
@@ -413,6 +417,44 @@ public class Server_Demo : MonoBehaviour
         }
     }
 
+    private void SendConnectionSceneInfo(ulong guid)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            playerObject client = clients[guid];
+            client.inConnectionScene = true;
+            clients[guid] = client;
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SENDCONNECTSCENEINFO);
+            int playersInConnectionScene = 0;
+
+
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inConnectionScene == true && playerObj.id != client.id)
+                {
+                    ++playersInConnectionScene;
+                }
+            }
+
+            m_NetworkWriter.Write(playersInConnectionScene);
+
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inConnectionScene == true && playerObj.id != client.id)
+                {
+                    m_NetworkWriter.Write(playerObj.id);
+                    m_NetworkWriter.Write(playerObj.name);
+                    string status = "";
+                    if (playerObj.inGameplayScene)
+                        status = "In-Game";
+                    else
+                        status = "Not In-Game";
+                    m_NetworkWriter.Write(status);
+                }
+            }
+            peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+        }
+    }
     private void OnReceivedShotData(ulong guid)
     {
         playerObject player = clients[guid];

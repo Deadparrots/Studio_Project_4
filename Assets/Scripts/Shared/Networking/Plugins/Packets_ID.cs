@@ -26,6 +26,7 @@ public enum Packets_ID : byte
     ID_DESTROYBULLET,
 
     ID_GETCONNECTSCENEINFO,
+    ID_SENDCONNECTSCENEINFO,
 
     /* unused in demo
     NET_SERVER_INFO,

@@ -148,17 +148,6 @@ public class Client_Demo : MonoBehaviour
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_GETCONNECTSCENEINFO);
 
             // step 9 : Instead of sending x,y,w ..... , send the server version instead (x,y,w,velocity, angular velocity)
-
-
-            m_NetworkWriter.Write(me.position.x);
-            m_NetworkWriter.Write(me.position.y);
-            m_NetworkWriter.Write(me.position.z);
-            m_NetworkWriter.Write(me.pRotation.x);
-            m_NetworkWriter.Write(me.pRotation.y);
-            m_NetworkWriter.Write(me.pRotation.z);
-            m_NetworkWriter.Write(me.velocity.x);
-            m_NetworkWriter.Write(me.velocity.y);
-            m_NetworkWriter.Write(me.velocity.z);
             m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
         }
     }
@@ -536,6 +525,36 @@ public class Client_Demo : MonoBehaviour
                     }
                     break;
 
+
+                case (byte)Packets_ID.ID_SENDCONNECTSCENEINFO:
+                    {
+                        int playerCount = m_NetworkReader.ReadInt32();
+                        GameObject[] playerDisplayList;
+                        playerDisplayList = GameObject.FindGameObjectsWithTag("PlayerConnectionDisplay");
+                        PlayerManager me = playersList[0];
+                        Text clientName = playerDisplayList[0].transform.Find("PlayerName").GetComponent<Text>();
+                        clientName.text = "" + me.pName;
+
+                        Text clientStatus = playerDisplayList[0].transform.Find("Status").GetComponent<Text>();
+                        clientStatus.text = "" + "Not In-Game";
+
+                        for (int i = 0; i < playerCount; ++i)
+                        {
+                            GameObject otherPlayer = Instantiate(playerReference);
+                            PlayerManager otherManager = otherPlayer.GetComponent<PlayerManager>();
+                            otherManager.pid = m_NetworkReader.ReadUInt32();
+                            otherManager.pName = m_NetworkReader.ReadString();
+                            string status = m_NetworkReader.ReadString();
+
+
+                            Text playerName = playerDisplayList[i + 1].transform.Find("PlayerName").GetComponent<Text>();
+                            playerName.text = "" + otherManager.pName;
+                            Text displayStatus = playerDisplayList[i + 1].transform.Find("Status").GetComponent<Text>();
+                            displayStatus.text = "" + status;
+                            playersList.Add(otherManager);
+                        }
+                    }
+                    break;
                     //end
             }
         }

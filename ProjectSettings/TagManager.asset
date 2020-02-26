@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - WaypointPath
   - Spawnpoint
+  - EnemyWeapon
+  - PlayerConnectionDisplay
   layers:
   - Default
   - TransparentFX
