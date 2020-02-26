@@ -5,12 +5,33 @@ using UnityEngine;
 public class LevelGenRewrite : MonoBehaviour
 {
 
+    private struct RoomRequirements
+    {
+        public int ConnectorIndex;
+        public RoomRewrite.Rotation Rotation;
+        public GameObject Room;
+        public Vector2Int Position;
+
+        public RoomRequirements(int _ConnectorIndex, RoomRewrite.Rotation _Rotation, GameObject _Room, Vector2Int _Position)
+        {
+            ConnectorIndex = _ConnectorIndex;
+            Rotation = _Rotation;
+            Room = _Room;
+            Position = _Position;
+        }
+    }
+
     // will probably do on free time
     List<bool> map = new List<bool>();
     public List<GameObject> prefabs = new List<GameObject>();
 
     public GameObject wall = null; // used to fill in a doorway that has been blocked
     private int gridsize;
+
+    private void Start()
+    {
+        GenerateMap(10, 1);
+    }
 
     public void GenerateMap(int _GridSize, int _Seed)
     {
@@ -33,7 +54,8 @@ public class LevelGenRewrite : MonoBehaviour
                     map.Add(false);
          }
 
-        int StartPos = Random.Range(0, gridsize * gridsize); // room where generator starts.
+        //int StartPos = Random.Range(0, gridsize * gridsize); // room where generator starts.
+        int StartPos = ((gridsize * gridsize) / 2) + (gridsize / 2);
 
         GameObject StartingRoom = Instantiate(prefabs[Random.Range(0, prefabs.Count)]);
         StartingRoom.transform.position = ConvertToWorldPos(StartPos);
@@ -42,6 +64,7 @@ public class LevelGenRewrite : MonoBehaviour
         WriteToMap(StartingRoomInfo.position, StartingRoomInfo.SizeX, StartingRoomInfo.SizeY);
 
         PrintInfo(StartingRoomInfo);
+        Generate(StartingRoomInfo);
     }
 
     private void Generate(RoomRewrite room)
@@ -64,20 +87,49 @@ public class LevelGenRewrite : MonoBehaviour
                 (RoomRewrite.Rotation)(((int)(room.Connectors[connector].Exit[(int)room.rotation]) + 2 )% 4); // + 2 since the opposite direction is +2, %4 to wraparound the values
 
             // Plan is to check through all available rooms for whether they can fit, add them to a list and random out one of them.
-            List<GameObject> validRooms = new List<GameObject>();
+            List<RoomRequirements> validRooms = new List<RoomRequirements>();
+
+             // do a loop or whatever to add to list
+            for (int i = 0; prefabs.Count > i;i++)
             {
-                // do a loop or whatever to add to list
+                RoomRewrite nextroom = prefabs[i].GetComponent<RoomRewrite>();
+                if (CheckPositionValidRoom(Nextposition, nextroom.SizeX, nextroom.SizeY)) // if the room can fit within the position
+                {
+                    for (int rotations = 0; 4 > rotations;rotations++)
+                    {
+                        RoomRewrite.Rotation rotation = (RoomRewrite.Rotation)rotations;
+                        for (int nextconnector = 0; nextroom.Connectors.Count > nextconnector;nextconnector++)
+                        {
+                            if (nextroom.Connectors[nextconnector].Exit[(int)rotation] == RequiredRotationForConnector) // if correct connector
+                            {
+                                    if (CheckPositionValidRoom(Nextposition - nextroom.Connectors[nextconnector].rotatedpositions[(int)rotation], nextroom.SizeX, nextroom.SizeY))
+                                    {
+                                        validRooms.Add(new RoomRequirements(nextconnector, rotation, prefabs[i], Nextposition - nextroom.Connectors[nextconnector].rotatedpositions[(int)rotation]));
+                                        continue;
+                                    }
+                            }
+                        }
+                    }
+                }
             }
 
             if (validRooms.Count != 0)
             {
-                GameObject tobeSpawned = Instantiate(validRooms[Random.Range(0, validRooms.Count)]);
+                int index = Random.Range(0, validRooms.Count);
+                GameObject tobeSpawned = Instantiate(validRooms[index].Room);
                 RoomRewrite tobeSpawnedRoom = tobeSpawned.GetComponent<RoomRewrite>();
-                tobeSpawned.transform.position = ConvertToWorldPos(position);
+
+                tobeSpawnedRoom.position = validRooms[index].Position;
+                tobeSpawnedRoom.rotation = validRooms[index].Rotation;
+                tobeSpawnedRoom.Connectors[validRooms[index].ConnectorIndex].processed = true;
+
+                tobeSpawned.transform.position = ConvertToWorldPos(validRooms[index].Position);
                 GameObject tobeRotated = tobeSpawned.transform.Find("Plane").gameObject;
-                tobeRotated.transform.rotation = Quaternion.Euler(0, 90 * (int)tobeSpawnedRoom.rotation, 0);
-                PrintInfo(room);
-                Generate(tobeSpawnedRoom);
+                tobeRotated.transform.rotation = Quaternion.Euler(0, 90 * (int)validRooms[index].Rotation, 0);
+
+                WriteToMap(Nextposition, tobeSpawnedRoom.SizeX, tobeSpawnedRoom.SizeY);
+                PrintInfo(tobeSpawnedRoom);
+                Generate(tobeSpawnedRoom); // Starts Work on next room
             }
             else
             {
@@ -95,6 +147,10 @@ public class LevelGenRewrite : MonoBehaviour
             for (int x = 0; SizeX > x; x++)
             {
                 int index = ((position.y + y) * gridsize) + (position.x + x);
+
+                if (index > (map.Count - 1) || 0 > index)
+                    return false;
+
                 if (map[index]) // returns false if the map position is taken
                     return false;
             }
@@ -139,32 +195,32 @@ public class LevelGenRewrite : MonoBehaviour
 
     private void PrintInfo(RoomRewrite room)
     {
-        Debug.Log(room.name + " has been generated");
+        Debug.Log(room.name + " has been generated at " + room.position + " with a rotation of " + room.rotation.ToString());
         for (int count = 0; room.Connectors.Count > count; count++)
         {
             if (!room.Connectors[count].processed)
-                Debug.Log("A Room Should be Generated at " + (room.position + room.GetConnectorMapExitPosition(count)));
+                Debug.Log("A Room Should be Generated at " + (room.GetConnectorMapExitPosition(count)));
         }
     }
 
     private void SpawnWall(RoomRewrite room, int index)
     {
         GameObject newwall = Instantiate(wall);
-
+        Vector3 temp = new Vector3(room.Connectors[index].rotatedpositions[(int)room.rotation].x * 10, 0, room.Connectors[index].rotatedpositions[(int)room.rotation].y * 10);
         switch (room.Connectors[index].Exit[(int)(room.rotation)])
         {
             case RoomRewrite.Rotation.Up:
-                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(5, 1.5f, 9.5f);
+                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(5, 1.5f, 9.5f) + temp;
                 break;
             case RoomRewrite.Rotation.Down:
-                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(5, 1.5f, 0.5f);
+                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(5, 1.5f, 0.5f) + temp;
                 break;
             case RoomRewrite.Rotation.Left:
-                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(0.5f, 1.5f, 5);
+                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(0.5f, 1.5f, 5) + temp;
                 newwall.transform.rotation = Quaternion.Euler(0, 90, 0);
                 break;
             case RoomRewrite.Rotation.Right:
-                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(9.5f, 1.5f, 5);
+                newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(9.5f, 1.5f, 5) + temp;
                 newwall.transform.rotation = Quaternion.Euler(0, 90, 0);
                 break;
         }

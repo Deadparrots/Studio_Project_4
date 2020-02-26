@@ -13,7 +13,7 @@ public class RoomRewrite : MonoBehaviour
         Left
     }
     [System.Serializable]
-    public struct Connector
+    public class Connector
     {
        public bool processed; // should always start as false
        public Vector2Int[] rotatedpositions; //Relative to Set Room, Added to deal with rooms with sizes that are not 1X1
@@ -38,7 +38,12 @@ public class RoomRewrite : MonoBehaviour
 
     public Vector2Int GetConnectorMapExitPosition(int index)
     {
-        return position + Connectors[index].rotatedpositions[(int)rotation] + exits[(int)rotation];
+        return position + Connectors[index].rotatedpositions[(int)rotation] + exits[(int)Connectors[index].Exit[(int)rotation]];
+    }
+
+    public Vector2Int GetConnectorExitPosition(int index)
+    {
+        return Connectors[index].rotatedpositions[(int)rotation] + exits[(int)Connectors[index].Exit[(int)rotation]];
     }
     
     public bool SameSize(RoomRewrite other)
