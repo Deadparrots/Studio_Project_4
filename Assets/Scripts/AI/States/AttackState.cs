@@ -23,7 +23,7 @@ public class AttackState : State<EnemyAI>
     }
     public override void Update(double dt)
     {
-        if (m_go.hp < 0)
+        if (m_go.hp <= 0)
             m_go.sm.SetNextState("Dead");
         else
         {

@@ -595,21 +595,29 @@ public class Server_Demo : MonoBehaviour
 
     public void DmgEnemy(uint enemyID, float dmg)
     {
-        if (m_NetworkWriter.StartWritting())
+        foreach (EnemyAI enemy in enemyList)
         {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DMGENEMY);
-            m_NetworkWriter.Write(enemyID);
-            m_NetworkWriter.Write(dmg);
-
-
-            foreach (ulong guids in clients.Keys)
+            if (enemy.pid == enemyID)
             {
-                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+                enemy.hp -= dmg;
             }
         }
+
+        // TODO: ADD SCORE OF BulletOwner
+
+        //if (m_NetworkWriter.StartWritting())
+        //{
+        //    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DMGENEMY);
+        //    m_NetworkWriter.Write(enemyID);
+        //    m_NetworkWriter.Write(dmg);
+        //    foreach (ulong guids in clients.Keys)
+        //    {
+        //        peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+        //    }
+        //}
     }
 
-    public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation,string currentState)
+    public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation,string currentState,float hp)
     {
         if (m_NetworkWriter.StartWritting())
         {
@@ -618,6 +626,7 @@ public class Server_Demo : MonoBehaviour
             m_NetworkWriter.Write(position);
             m_NetworkWriter.Write(rotation);
             m_NetworkWriter.Write(currentState);
+            m_NetworkWriter.Write(hp);
 
 
             foreach (ulong guids in clients.Keys)

@@ -118,7 +118,7 @@ public class EnemyAI : MonoBehaviour
         if (isController)
         {
             sm.Update(Time.deltaTime);
-            Server_Demo.Instance.UpdateEnemyInClient(id, position, rotation,sm.GetCurrentState());
+            Server_Demo.Instance.UpdateEnemyInClient(id, position, rotation,sm.GetCurrentState(),healthPoints);
         }
 
 
