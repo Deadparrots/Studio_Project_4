@@ -417,7 +417,7 @@ public class Server_Demo : MonoBehaviour
         tempObj.position.x = m_NetworkReader.ReadFloat();
         tempObj.position.y = m_NetworkReader.ReadFloat();
         tempObj.position.z = m_NetworkReader.ReadFloat();
-        
+        Vector3 forward = m_NetworkReader.ReadVector3();
         if (m_NetworkWriter.StartWritting())
         {
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOOTBULLET);
@@ -425,6 +425,8 @@ public class Server_Demo : MonoBehaviour
             m_NetworkWriter.Write(tempObj.position.x);
             m_NetworkWriter.Write(tempObj.position.y);
             m_NetworkWriter.Write(tempObj.position.z);
+            m_NetworkWriter.Write(forward);
+
             foreach (ulong guids in clients.Keys)
             {
                 peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);

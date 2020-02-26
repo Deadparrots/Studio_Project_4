@@ -46,12 +46,12 @@ public class Client_Demo : MonoBehaviour
     {
         userName = _name;
         Connect(_ip, _port);
-       //GetComponent<GameData>().inventory1 = 1;
-       //GetComponent<GameData>().inventory2 = 0;
-       //GetComponent<GameData>().inventorychoice = 1;
-       //GetComponent<GameData>().hp = 10;
-       //GetComponent<GameData>().money = 100;
-       //GetComponent<GameData>().revival = false;
+        //GetComponent<GameData>().inventory1 = 1;
+        //GetComponent<GameData>().inventory2 = 0;
+        //GetComponent<GameData>().inventorychoice = 1;
+        //GetComponent<GameData>().hp = 10;
+        //GetComponent<GameData>().money = 100;
+        //GetComponent<GameData>().revival = false;
     }
 
     public bool IsRunning
@@ -91,11 +91,21 @@ public class Client_Demo : MonoBehaviour
             PlayerManager me = playersList[0];
             if (me == null)
                 return;
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOOTBULLET);
-            m_NetworkWriter.Write(me.position.x);
-            m_NetworkWriter.Write(me.position.y);
-            m_NetworkWriter.Write(me.position.z);
-            m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
+
+            Vector3 bulletPos = new Vector3(0, 0, 0);
+            foreach (Transform child in me.gameObject.transform)
+            {
+                if (child.name == "Body")
+                {
+                    bulletPos = child.gameObject.transform.position + (child.gameObject.transform.forward.normalized);
+                    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOOTBULLET);
+                    m_NetworkWriter.Write(bulletPos.x);
+                    m_NetworkWriter.Write(bulletPos.y);
+                    m_NetworkWriter.Write(bulletPos.z);
+                    m_NetworkWriter.Write(child.gameObject.transform.forward);
+                    m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
+                }
+            }
         }
     }
     private void SendMovement()
@@ -103,8 +113,6 @@ public class Client_Demo : MonoBehaviour
         if (m_NetworkWriter.StartWritting())
         {
             PlayerManager me = playersList[0];
-            if (me == null)
-                return;
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_MOVEMENT);
 
             // step 9 : Instead of sending x,y,w ..... , send the server version instead (x,y,w,velocity, angular velocity)
@@ -151,7 +159,7 @@ public class Client_Demo : MonoBehaviour
     {
         Connect(ip, port, 30, 500, 30);
     }
-    
+
 
     public void Disconnect()
     {
@@ -229,8 +237,8 @@ public class Client_Demo : MonoBehaviour
         }
         else
         {
-            switch(packet_id)
-            { 
+            switch (packet_id)
+            {
                 case (byte)Packets_ID.CL_INFO:
                     if (m_NetworkWriter.StartWritting())
                     {
@@ -242,16 +250,16 @@ public class Client_Demo : MonoBehaviour
                         m_MainCamera = Camera.main;
                         LockRelativePosition lrpScript = m_MainCamera.GetComponent<LockRelativePosition>();
 
-                        foreach(Transform child in playerObj.transform)
+                        foreach (Transform child in playerObj.transform)
                         {
-                            if(child.name == "Body")
+                            if (child.name == "Body")
                             {
                                 lrpScript.Reference = child.gameObject;
                             }
                         }
 
 
-                            m_NetworkWriter.WritePacketID((byte)Packets_ID.CL_INFO);
+                        m_NetworkWriter.WritePacketID((byte)Packets_ID.CL_INFO);
                         m_NetworkWriter.Write(m_ClientNetInfo.name);
                         m_NetworkWriter.WritePackedUInt64(m_ClientNetInfo.local_id);
                         m_NetworkWriter.Write(m_ClientNetInfo.client_hwid);
@@ -275,8 +283,8 @@ public class Client_Demo : MonoBehaviour
                     }
                     break;
                 case (byte)Packets_ID.CL_ACCEPTED:
-                        m_ClientNetInfo.net_id = m_NetworkReader.ReadPackedUInt64();
-                        Debug.Log("[Client] Accepted connection by server... [ID: " + m_ClientNetInfo.net_id + "]");
+                    m_ClientNetInfo.net_id = m_NetworkReader.ReadPackedUInt64();
+                    Debug.Log("[Client] Accepted connection by server... [ID: " + m_ClientNetInfo.net_id + "]");
                     break;
                 case (byte)Packets_ID.ID_WELCOME:
                     Debug.Log("welcome!!");
@@ -462,24 +470,14 @@ public class Client_Demo : MonoBehaviour
                 case (byte)Packets_ID.ID_SHOOTBULLET:
                     {
                         uint bid = m_NetworkReader.ReadUInt32();
-                        Vector3 playerpos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                        Vector3 bulletPos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
                         Rigidbody gun = Instantiate(bulletReference) as Rigidbody;
-                        gun.position = playerpos;
-                        foreach (PlayerManager player in playersList)
-                        {
-                            if(player.pid == bid)
-                            {
-                                Debug.Log("bangest");
-                                foreach (Transform child in player.transform)
-                                {
-                                    if (child.name == "Body")
-                                    {
-                                        gun.AddForce(child.gameObject.transform.forward * 500);
-                                    }
-                                }
-                            }
-                        }
-                       
+                        gun.position = bulletPos;
+                        Vector3 forward = m_NetworkReader.ReadVector3();
+                        gun.AddForce(forward * 500);
+                        //TODO: ADD TO LIST, assign ID to bullet
+
+
                     }
                     break;
 
@@ -513,7 +511,7 @@ public class Client_Demo : MonoBehaviour
         Debug.Log("[Client] Connected to " + address);
 
         //формируем/готовим информацию клиента
-        m_ClientNetInfo.name = "Player_"+Environment.MachineName;
+        m_ClientNetInfo.name = "Player_" + Environment.MachineName;
         m_ClientNetInfo.local_id = peer.incomingGUID;
         m_ClientNetInfo.client_hwid = SystemInfo.deviceUniqueIdentifier;
         m_ClientNetInfo.client_version = Application.version;
