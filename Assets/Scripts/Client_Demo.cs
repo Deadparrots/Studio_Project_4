@@ -17,7 +17,7 @@ public class Client_Demo : MonoBehaviour
     [SerializeField] private GameObject playerReference;
     [SerializeField] private GameObject enemyReference;
     [SerializeField] private GameObject healthPickupReference;
-    [SerializeField] private Rigidbody bulletReference;
+    [SerializeField] private GameObject bulletReference;
 
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
@@ -469,15 +469,32 @@ public class Client_Demo : MonoBehaviour
                     break;
                 case (byte)Packets_ID.ID_SHOOTBULLET:
                     {
-                        uint bid = m_NetworkReader.ReadUInt32();
+                        uint bid = m_NetworkReader.ReadUInt32();    // bulletid
+                        uint boid = m_NetworkReader.ReadUInt32();   // ownerid
                         Vector3 bulletPos = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
-                        Rigidbody gun = Instantiate(bulletReference) as Rigidbody;
-                        gun.position = bulletPos;
-                        BulletManager bulletManager = gun.GetComponentInParent<BulletManager>();
+                        GameObject bullet = Instantiate(bulletReference);
+                        Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
+                        bulletRigidbody.position = bulletPos;
+                        BulletManager bulletManager = bullet.GetComponent<BulletManager>();
                         Vector3 forward = m_NetworkReader.ReadVector3();
-                        gun.AddForce(forward * 500);
+                        bulletRigidbody.AddForce(forward * 500);
                         bulletManager.pid = bid;
+                        bulletManager.ownerID = boid;
                         bulletList.Add(bulletManager);
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_DESTROYBULLET:
+                    {
+                        uint bid = m_NetworkReader.ReadUInt32();
+
+                        foreach(BulletManager bullet in bulletList)
+                        {
+                            if(bullet.pid == bid)
+                            {
+                                Destroy(bullet.gameObject);
+                            }
+                        }
                     }
                     break;
 

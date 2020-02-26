@@ -57,5 +57,5 @@ MonoBehaviour:
     type: 3}
   healthPickupReference: {fileID: 3752942730893247769, guid: 73e938ff8a94aa248b1a0fae3d4899dd,
     type: 3}
-  bulletReference: {fileID: -2898740084514548349, guid: 81c779ff52394b44e8e0521037712608,
+  bulletReference: {fileID: 6957303512602015903, guid: 81c779ff52394b44e8e0521037712608,
     type: 3}

@@ -37,10 +37,12 @@ public class bulletObject
 {
     public uint id;
     public Vector3 position;
-    public bulletObject(uint _id)
+    public uint owner_id;
+    public bulletObject(uint _id,uint _owner)
     {
         position = new Vector3(0, 0, 0);
         id = _id;
+        owner_id = _owner;
     }
 }
 public class pickupObject
@@ -83,10 +85,11 @@ public class Server_Demo : MonoBehaviour
     public Text Info;
     private Dictionary<ulong, playerObject> clients = new Dictionary<ulong, playerObject>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
-    private List<bulletObject> bullets = new List<bulletObject>();
+    private List<bulletObject> bulletList = new List<bulletObject>();
     private uint playerID;
     private uint enemyID;
     private uint pickupID;
+    private uint bulletID;
     public List<WaypointPath> waypointPathsList = new List<WaypointPath>();
     public List<SpawnPoint> spawnPointList = new List<SpawnPoint>();
     const int MAX_PLAYERS = 4;
@@ -413,19 +416,36 @@ public class Server_Demo : MonoBehaviour
     private void OnReceivedShotData(ulong guid)
     {
         playerObject player = clients[guid];
-        bulletObject tempObj = new bulletObject(player.id);
+        bulletObject tempObj = new bulletObject(bulletID,player.id);
         tempObj.position.x = m_NetworkReader.ReadFloat();
         tempObj.position.y = m_NetworkReader.ReadFloat();
         tempObj.position.z = m_NetworkReader.ReadFloat();
         Vector3 forward = m_NetworkReader.ReadVector3();
+        ++bulletID;
         if (m_NetworkWriter.StartWritting())
         {
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOOTBULLET);
             m_NetworkWriter.Write(tempObj.id);
+            m_NetworkWriter.Write(tempObj.owner_id);
             m_NetworkWriter.Write(tempObj.position.x);
             m_NetworkWriter.Write(tempObj.position.y);
             m_NetworkWriter.Write(tempObj.position.z);
             m_NetworkWriter.Write(forward);
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+            bulletList.Add(tempObj);
+        }
+    }
+
+    public void DestroyBullet(uint id)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYBULLET);
+            m_NetworkWriter.Write(id);
 
             foreach (ulong guids in clients.Keys)
             {

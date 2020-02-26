@@ -23,6 +23,7 @@ public enum Packets_ID : byte
     ID_SPAWNPICKUP,
     ID_DESTROYPICKUP,
     ID_SHOOTBULLET,
+    ID_DESTROYBULLET,
 
     /* unused in demo
     NET_SERVER_INFO,
