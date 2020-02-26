@@ -15,8 +15,11 @@ public class LockRelativePosition : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 newPos = Reference.transform.position + Position;
-        transform.position = newPos;
-        transform.eulerAngles = new Vector3(45, 0, 0);
+        if(Reference != null)
+        {
+            Vector3 newPos = Reference.transform.position + Position;
+            transform.position = newPos;
+            transform.eulerAngles = new Vector3(45, 0, 0);
+        }
     }
 }
