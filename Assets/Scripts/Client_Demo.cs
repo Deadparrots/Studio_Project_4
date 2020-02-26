@@ -22,7 +22,7 @@ public class Client_Demo : MonoBehaviour
     private List<PlayerManager> playersList = new List<PlayerManager>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<PickupManager> pickupList = new List<PickupManager>();
-    private List<bulletObject> bullets = new List<bulletObject>();
+    private List<bulletObject> bulletList = new List<bulletObject>();
 
     //private List<ShipManager> shipList = new List<ShipManager>();
     //private List<MissileManager> missileList = new List<MissileManager>();
@@ -469,7 +469,6 @@ public class Client_Demo : MonoBehaviour
                         {
                             if(player.pid == bid)
                             {
-                                Debug.Log("bangest");
                                 foreach (Transform child in player.transform)
                                 {
                                     if (child.name == "Body")
