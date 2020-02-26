@@ -18,7 +18,7 @@ public class CollisionCheck : MonoBehaviour
 
 
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter(Collision collision)
     {
         //Debug.Log(gameObject.name + " Collided with "+ collision.gameObject.name);
 
@@ -38,12 +38,9 @@ public class CollisionCheck : MonoBehaviour
         //    }
         //    if (collision.gameObject.GetComponent<ShotMovement>().source != gameObject) //TODO: Replace with a message to delete
         //    {
-
         //        Client_Demo.Instance.SendShipDeleteRequest(gameObject.GetComponentInParent<ShipManager>());
         //        Client_Demo.Instance.SendShotDeleteRequest(collision.gameObject);
-
         //    }
-
         //    return;
         //}
     }
