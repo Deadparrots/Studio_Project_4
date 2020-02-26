@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class SceneManagement : MonoBehaviour
 {
     // Start is called before the first frame update
+    string currentScene;
     void Start()
     {
         
@@ -18,22 +19,41 @@ public class SceneManagement : MonoBehaviour
     }
     public void ToMainmenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        ChangeScene("MainMenu");
     }
     public void ToSplashscreen()
     {
-        SceneManager.LoadScene("SplashScreen");
+        ChangeScene("SplashScreen");
     }
     public void ToConnectScreen()
     {
-        SceneManager.LoadScene("ConnectScreen");
+        ChangeScene("ConnectScreen");
     }
     public void ToGame()
     {
-        SceneManager.LoadScene("Gameplay");
+        ChangeScene("Gameplay");
     }
     public void ToEndScreen()
     {
-        SceneManager.LoadScene("EndScreen");
+        ChangeScene("EndScreen");
+    }
+
+    public void Unload(string sceneName)
+    {
+        if (SceneManager.GetSceneByName(sceneName).isLoaded)
+            SceneManager.UnloadSceneAsync(sceneName);
+    }
+
+    public void ChangeScene(string sceneName)
+    {
+        if (currentScene != "")
+            Unload(currentScene);
+
+        if (Application.CanStreamedLevelBeLoaded(sceneName))
+        {
+            Scene nextScene = SceneManager.GetSceneByName(sceneName);
+            SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+            currentScene = sceneName;
+        }
     }
 }
