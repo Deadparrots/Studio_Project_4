@@ -49,6 +49,10 @@ public class CollisionCheck : MonoBehaviour
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
+            else if(collision.gameObject.name == "breakable")
+            {
+
+            }
         }
     }
 

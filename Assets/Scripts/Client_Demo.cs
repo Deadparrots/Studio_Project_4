@@ -187,7 +187,7 @@ public class Client_Demo : MonoBehaviour
             }
         }
 
-        //Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
+        Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
     }
 
 
@@ -312,7 +312,7 @@ public class Client_Demo : MonoBehaviour
                         GameObject enemy = Instantiate(enemyReference);
                         EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
                         enemyManager.pid = m_NetworkReader.ReadUInt32();
-                        Debug.Log("ID: " + enemyManager.pid);
+                        //Debug.Log("ID: " + enemyManager.pid);
                         enemyManager.ePosition = m_NetworkReader.ReadVector3();
                         enemyManager.eRotation = m_NetworkReader.ReadVector3();
                         enemyList.Add(enemyManager);
@@ -446,7 +446,7 @@ public class Client_Demo : MonoBehaviour
                                 enemy.gameObject.transform.eulerAngles = rotation;
                                 enemy.sm.SetCurrentState(currentState);
                                 enemy.hp = hp;
-                                Debug.Log("Enemy HP: " + hp);
+                                //Debug.Log("Enemy HP: " + hp);
                                 break;
                             }
                         }
