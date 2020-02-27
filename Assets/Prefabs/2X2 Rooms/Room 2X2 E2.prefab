@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2656462486205365738}
   - component: {fileID: 1996062313142988315}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 9127637154360217756}
   - component: {fileID: 4095561935023694716}
   m_Layer: 0
-  m_Name: Cube (1)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -373,7 +373,7 @@ GameObject:
   - component: {fileID: 5716861279796187064}
   - component: {fileID: 2901864596761116761}
   m_Layer: 0
-  m_Name: Long Wall
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -482,7 +482,7 @@ GameObject:
   - component: {fileID: 4567821216879216867}
   - component: {fileID: 952627603317968281}
   m_Layer: 0
-  m_Name: Cube (2)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -591,7 +591,7 @@ GameObject:
   - component: {fileID: 6714114911456336700}
   - component: {fileID: 3682032469352270643}
   m_Layer: 0
-  m_Name: Long Wall
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -696,6 +696,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5746732846537659474}
   - component: {fileID: -6594151329326954729}
+  - component: {fileID: 557085392197257765}
   m_Layer: 0
   m_Name: Room 2X2 E2
   m_TagString: Untagged
@@ -718,7 +719,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-6594151329326954729
+--- !u!114 &
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -737,7 +738,39 @@ MonoBehaviour:
   - {x: -1, y: 0}
   - {x: 2, y: 1}
   ConnectorsProcessed: 0000
+  ConnectorDirection: 0300000001000000
   rotation: 0
+--- !u!114 &557085392197257765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5746732846537659475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 291f7ceb8684837429e7e7062e7f5f62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SizeX: 2
+  SizeY: 2
+  position: {x: 0, y: 0}
+  rotation: 0
+  Connectors:
+  - processed: 0
+    rotatedpositions:
+    - {x: 0, y: 0}
+    - {x: 0, y: 1}
+    - {x: 1, y: 1}
+    - {x: 1, y: 0}
+    Exit: 03000000000000000100000002000000
+  - processed: 0
+    rotatedpositions:
+    - {x: 1, y: 1}
+    - {x: 1, y: 0}
+    - {x: 0, y: 0}
+    - {x: 0, y: 1}
+    Exit: 01000000020000000300000000000000
 --- !u!1 &5746732847567118755
 GameObject:
   m_ObjectHideFlags: 0
@@ -992,7 +1025,7 @@ GameObject:
   - component: {fileID: 4331360344781712896}
   - component: {fileID: 7342510160425861144}
   m_Layer: 0
-  m_Name: Cube (2)
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

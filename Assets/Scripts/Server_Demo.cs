@@ -142,6 +142,7 @@ public class Server_Demo : MonoBehaviour
             SpawnPoint spawnpoint = new SpawnPoint();
             spawnpoint.active = true;
             spawnpoint.position = spawn.transform.position;
+            Debug.Log("SPawnpoint position: " + spawnpoint.position);
             spawnPointList.Add(spawnpoint);
         }
     }
@@ -657,6 +658,11 @@ public class Server_Demo : MonoBehaviour
         //        peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
         //    }
         //}
+    }
+
+    public void DestroyBreakable()
+    {
+
     }
 
     public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation,string currentState,float hp)

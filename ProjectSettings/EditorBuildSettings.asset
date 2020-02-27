@@ -9,15 +9,15 @@ EditorBuildSettings:
     path: Assets/Scenes/DoNotUnload.unity
     guid: b6da86af9db83ed4aad5ec29db0b7fd7
   - enabled: 1
+    path: Assets/Scenes/EndScreen.unity
+    guid: 2d872f18c3dbc2d47a0efd05df974fca
+  - enabled: 1
+    path: Assets/Scenes/Gameplay.unity
+    guid: 075e2fa859780bf4c8e617bf5f4e17db
+  - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 7b81554489ba94f4a9cf3e6e076d3c67
   - enabled: 1
     path: Assets/Scenes/ConnectScreen.unity
     guid: 103ecee90a9131d4ab0d0536710b2f03
-  - enabled: 1
-    path: Assets/Scenes/Gameplay.unity
-    guid: 075e2fa859780bf4c8e617bf5f4e17db
-  - enabled: 1
-    path: Assets/Scenes/EndScreen.unity
-    guid: 2d872f18c3dbc2d47a0efd05df974fca
   m_configObjects: {}
