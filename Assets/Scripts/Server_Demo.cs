@@ -454,8 +454,40 @@ public class Server_Demo : MonoBehaviour
                 }
             }
             peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            SendConnectionPlayerInfo(guid);
         }
     }
+
+    private void SendConnectionPlayerInfo(ulong guid)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            playerObject client = clients[guid];
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inConnectionScene == true && playerObj.id != client.id)
+                {
+                    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWCONNECTPLAYER);
+                    m_NetworkWriter.Write(client.id);
+                    m_NetworkWriter.Write(client.name);
+                    peer.SendData(GetGUID(playerObj), Peer.Reliability.Reliable, 0, m_NetworkWriter);
+                }
+            }
+        }
+    }
+
+    private ulong GetGUID(playerObject player)
+    {
+        foreach (KeyValuePair<ulong, playerObject> keyValue in clients)
+        {
+            if(keyValue.Value == player)
+            {
+                return keyValue.Key;
+            }
+        }
+        return ulong.MaxValue;
+    }
+
     private void OnReceivedShotData(ulong guid)
     {
         playerObject player = clients[guid];
@@ -543,22 +575,22 @@ public class Server_Demo : MonoBehaviour
 
         clients[guid] = tempObj;
 
-        if (m_NetworkWriter.StartWritting())
-        {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWPLAYER);
-            m_NetworkWriter.Write(tempObj.id);
-            m_NetworkWriter.Write(tempObj.name);
-            m_NetworkWriter.Write(tempObj.m_x);
-            m_NetworkWriter.Write(tempObj.m_y);
-            m_NetworkWriter.Write(tempObj.m_z);
-            m_NetworkWriter.Write(tempObj.rotation_x);
-            m_NetworkWriter.Write(tempObj.rotation_y);
-            m_NetworkWriter.Write(tempObj.rotation_z);
-            m_NetworkWriter.Write(tempObj.playerNum);
+        //if (m_NetworkWriter.StartWritting())
+        //{
+        //    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWPLAYER);
+        //    m_NetworkWriter.Write(tempObj.id);
+        //    m_NetworkWriter.Write(tempObj.name);
+        //    m_NetworkWriter.Write(tempObj.m_x);
+        //    m_NetworkWriter.Write(tempObj.m_y);
+        //    m_NetworkWriter.Write(tempObj.m_z);
+        //    m_NetworkWriter.Write(tempObj.rotation_x);
+        //    m_NetworkWriter.Write(tempObj.rotation_y);
+        //    m_NetworkWriter.Write(tempObj.rotation_z);
+        //    m_NetworkWriter.Write(tempObj.playerNum);
 
-            SendToAll(guid, m_NetworkWriter, true);
-            // peer.SendBroadcast(Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
-        }
+        //    SendToAll(guid, m_NetworkWriter, true);
+        //    // peer.SendBroadcast(Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
+        //}
     }
     private void SendToAll(ulong guid, NetworkWriter _writer, bool broadcast)
     {

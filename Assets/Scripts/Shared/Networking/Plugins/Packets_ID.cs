@@ -27,6 +27,7 @@ public enum Packets_ID : byte
 
     ID_GETCONNECTSCENEINFO,
     ID_SENDCONNECTSCENEINFO,
+    ID_NEWCONNECTPLAYER,
 
     /* unused in demo
     NET_SERVER_INFO,

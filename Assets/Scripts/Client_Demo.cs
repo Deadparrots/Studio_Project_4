@@ -341,7 +341,7 @@ public class Client_Demo : MonoBehaviour
                     //    billboard.camera = m_MainCamera;
                     //    enemyList.Add(enemyManager);
                     //}
-                    //SendInitialStats();
+                    SendInitialStats();
                     break;
 
                 case (byte)Packets_ID.ID_MOVEMENT:
@@ -552,6 +552,32 @@ public class Client_Demo : MonoBehaviour
                             Text displayStatus = playerDisplayList[i + 1].transform.Find("Status").GetComponent<Text>();
                             displayStatus.text = "" + status;
                             playersList.Add(otherManager);
+                        }
+                    }
+                    break;
+
+
+
+                case (byte)Packets_ID.ID_NEWCONNECTPLAYER:
+                    {
+                        GameObject[] playerDisplayList;
+                        playerDisplayList = GameObject.FindGameObjectsWithTag("PlayerConnectionDisplay");
+
+                        GameObject otherPlayer = Instantiate(playerReference);
+                        PlayerManager otherManager = otherPlayer.GetComponent<PlayerManager>();
+                        otherManager.pid = m_NetworkReader.ReadUInt32();
+                        otherManager.pName = m_NetworkReader.ReadString();
+
+                        foreach (GameObject display in playerDisplayList)
+                        {
+                            Text name = display.transform.Find("PlayerName").GetComponent<Text>();
+                            if (name.text == "")
+                            {
+                                name.text = "" + otherManager.pName;
+                                Text status = display.transform.Find("Status").GetComponent<Text>();
+                                status.text = "" + "Not In-Game";
+                                break;
+                            }
                         }
                     }
                     break;
