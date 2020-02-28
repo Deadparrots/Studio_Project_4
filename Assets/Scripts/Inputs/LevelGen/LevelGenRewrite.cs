@@ -24,12 +24,17 @@ public class LevelGenRewrite : MonoBehaviour
     // will probably do on free time
     List<bool> map = new List<bool>();
     public List<GameObject> prefabs = new List<GameObject>();
+    private List<RoomRewrite> GeneratedRooms = new List<RoomRewrite>();
+
+    public GameObject Spawn; // The GameObject where the players start.
+    public GameObject Exit; // The GameObject where the game goes to the next level.
 
     public GameObject wall = null; // used to fill in a doorway that has been blocked
     private int gridsize;
 
     private void Start()
     {
+        //TODO: Move this function call to the client when it recieves a generate map packet.
         GenerateMap(10, 1);
     }
 
@@ -55,16 +60,29 @@ public class LevelGenRewrite : MonoBehaviour
          }
 
         //int StartPos = Random.Range(0, gridsize * gridsize); // room where generator starts.
-        int StartPos = ((gridsize * gridsize) / 2) + (gridsize / 2);
+        int MapStartPos = ((gridsize * gridsize) / 2) + (gridsize / 2); // Changed to be the middle of the map
 
         GameObject StartingRoom = Instantiate(prefabs[Random.Range(0, prefabs.Count)]);
-        StartingRoom.transform.position = ConvertToWorldPos(StartPos);
+        StartingRoom.transform.position = ConvertToWorldPos(MapStartPos);
         RoomRewrite StartingRoomInfo = StartingRoom.GetComponent<RoomRewrite>();
-        StartingRoomInfo.position = new Vector2Int(StartPos % gridsize, StartPos / gridsize);
+        StartingRoomInfo.position = new Vector2Int(MapStartPos % gridsize, MapStartPos / gridsize);
         WriteToMap(StartingRoomInfo.position, StartingRoomInfo.SizeX, StartingRoomInfo.SizeY);
 
+        GeneratedRooms.Add(StartingRoomInfo);
         PrintInfo(StartingRoomInfo);
         Generate(StartingRoomInfo);
+
+        // Spawn the spawnpoint and endpoint
+        int SpawnPoint = Random.Range(0, GeneratedRooms.Count);
+        GameObject temporary = Instantiate(Spawn);
+        temporary.transform.position = ConvertToWorldPos(GeneratedRooms[SpawnPoint].position)
+            + new Vector3(GeneratedRooms[SpawnPoint].SizeX * 5, 0, GeneratedRooms[SpawnPoint].SizeY * 5);
+
+        int EndPoint = Random.Range(0, GeneratedRooms.Count);
+        temporary = Instantiate(Exit);
+        temporary.transform.position = ConvertToWorldPos(GeneratedRooms[EndPoint].position)
+            + new Vector3(GeneratedRooms[EndPoint].SizeX * 5, 0, GeneratedRooms[EndPoint].SizeY * 5);
+
     }
 
     private void Generate(RoomRewrite room)
@@ -128,6 +146,7 @@ public class LevelGenRewrite : MonoBehaviour
                 tobeRotated.transform.rotation = Quaternion.Euler(0, 90 * (int)validRooms[index].Rotation, 0);
 
                 WriteToMap(Nextposition, tobeSpawnedRoom.SizeX, tobeSpawnedRoom.SizeY);
+                GeneratedRooms.Add(tobeSpawnedRoom);
                 PrintInfo(tobeSpawnedRoom);
                 Generate(tobeSpawnedRoom); // Starts Work on next room
             }
