@@ -19,7 +19,8 @@ public class playerObject
     public float rotation_x;
     public float rotation_y;
     public float rotation_z;
-
+    public bool inConnectionScene;
+    public bool inGameplayScene;
     public playerObject(uint _id)
     {
         this.playerNum = 1;
@@ -141,6 +142,7 @@ public class Server_Demo : MonoBehaviour
             SpawnPoint spawnpoint = new SpawnPoint();
             spawnpoint.active = true;
             spawnpoint.position = spawn.transform.position;
+            Debug.Log("SPawnpoint position: " + spawnpoint.position);
             spawnPointList.Add(spawnpoint);
         }
     }
@@ -285,6 +287,9 @@ public class Server_Demo : MonoBehaviour
                 case (byte)Packets_ID.ID_SHOOTBULLET:
                     OnReceivedShotData(peer.incomingGUID);
                     break;
+                case (byte)Packets_ID.ID_GETCONNECTSCENEINFO:
+                    SendConnectionSceneInfo(peer.incomingGUID);
+                    break;
             }
 
 
@@ -413,6 +418,44 @@ public class Server_Demo : MonoBehaviour
         }
     }
 
+    private void SendConnectionSceneInfo(ulong guid)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            playerObject client = clients[guid];
+            client.inConnectionScene = true;
+            clients[guid] = client;
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SENDCONNECTSCENEINFO);
+            int playersInConnectionScene = 0;
+
+
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inConnectionScene == true && playerObj.id != client.id)
+                {
+                    ++playersInConnectionScene;
+                }
+            }
+
+            m_NetworkWriter.Write(playersInConnectionScene);
+
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inConnectionScene == true && playerObj.id != client.id)
+                {
+                    m_NetworkWriter.Write(playerObj.id);
+                    m_NetworkWriter.Write(playerObj.name);
+                    string status = "";
+                    if (playerObj.inGameplayScene)
+                        status = "In-Game";
+                    else
+                        status = "Not In-Game";
+                    m_NetworkWriter.Write(status);
+                }
+            }
+            peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+        }
+    }
     private void OnReceivedShotData(ulong guid)
     {
         playerObject player = clients[guid];
@@ -617,6 +660,11 @@ public class Server_Demo : MonoBehaviour
         //}
     }
 
+    public void DestroyBreakable()
+    {
+
+    }
+
     public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation,string currentState,float hp)
     {
         if (m_NetworkWriter.StartWritting())
@@ -680,43 +728,45 @@ public class Server_Demo : MonoBehaviour
 
                     Vector3 zeroVector = new Vector3(0, 0, 0);
 
-                    if (playerID < MAX_PLAYERS && spawnPointList.Count >= playerID)
-                    {
-                        m_NetworkWriter.Write(spawnPointList[(int)playerID].position);
-                    }
-                    else
-                        m_NetworkWriter.Write(zeroVector);  // in case no spawn point was set
-                    m_NetworkWriter.Write(clients.Count);
+                    // TODO: move to function that inits gameplay stuff
+                    //if (playerID < MAX_PLAYERS && spawnPointList.Count >= playerID)
+                    //{
+                    //    m_NetworkWriter.Write(spawnPointList[(int)playerID].position);
+                    //}
+                    //else
+                    //m_NetworkWriter.Write(zeroVector);  // in case no spawn point was set
 
-                    foreach (playerObject playerObj in clients.Values)
-                    {
-                        m_NetworkWriter.Write(playerObj.id);
-                        m_NetworkWriter.Write(playerObj.m_x);
-                        m_NetworkWriter.Write(playerObj.m_y);
-                        m_NetworkWriter.Write(playerObj.m_z);
-                        m_NetworkWriter.Write(playerObj.rotation_x);
-                        m_NetworkWriter.Write(playerObj.rotation_y);
-                        m_NetworkWriter.Write(playerObj.rotation_z);
-                        //m_NetworkWriter.Write(playerObj.playerNum);
-                        m_NetworkWriter.Write(playerObj.name);
-                    }
+                    //m_NetworkWriter.Write(clients.Count);
 
-                    m_NetworkWriter.Write(enemyList.Count);
-                    foreach (EnemyAI enemy in enemyList)
-                    {
-                        m_NetworkWriter.Write(enemy.pid);
-                        m_NetworkWriter.Write(enemy.ePosition);
-                        m_NetworkWriter.Write(enemy.eRotation);
-                    }
+                    //foreach (playerObject playerObj in clients.Values)
+                    //{
+                    //    m_NetworkWriter.Write(playerObj.id);
+                    //    m_NetworkWriter.Write(playerObj.m_x);
+                    //    m_NetworkWriter.Write(playerObj.m_y);
+                    //    m_NetworkWriter.Write(playerObj.m_z);
+                    //    m_NetworkWriter.Write(playerObj.rotation_x);
+                    //    m_NetworkWriter.Write(playerObj.rotation_y);
+                    //    m_NetworkWriter.Write(playerObj.rotation_z);
+                    //    //m_NetworkWriter.Write(playerObj.playerNum);
+                    //    m_NetworkWriter.Write(playerObj.name);
+                    //}
+
+                    //m_NetworkWriter.Write(enemyList.Count);
+                    //foreach (EnemyAI enemy in enemyList)
+                    //{
+                    //    m_NetworkWriter.Write(enemy.pid);
+                    //    m_NetworkWriter.Write(enemy.ePosition);
+                    //    m_NetworkWriter.Write(enemy.eRotation);
+                    //}
                     peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
                     //  m_NetworkWriter.Send//sending
                     //m_NetworkWriter.Reset();
-                    Vector3 position = spawnPointList[(int)playerID].position;
+                    //Vector3 position = spawnPointList[(int)playerID].position;
                     playerObject newObj = new playerObject(playerID);
                     newObj.playerNum = m_NetworkReader.ReadInt32();
-                    newObj.m_x = position.x;
-                    newObj.m_y = position.y;
-                    newObj.m_z = position.z;
+                    newObj.m_x = zeroVector.x;
+                    newObj.m_y = zeroVector.y;
+                    newObj.m_z = zeroVector.z;
                     clients.Add(guid, newObj);
                     ++playerID;
                     Debug.Log("Added new guy : " + newObj.id);

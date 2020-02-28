@@ -36,16 +36,25 @@ public class Client_Demo : MonoBehaviour
     private float delta = 0.0f;
     private string userName;
     Camera m_MainCamera;
-
+    string currScene;
+    SceneManagement sceneMgr;
     private void Awake()
     {
         Instance = this;
+        sceneMgr = gameObject.GetComponent<SceneManagement>();
     }
+
+    public SceneManagement GetSceneManager()
+    {
+        return sceneMgr;
+    }
+
 
     public void Init(string _ip, int _port, string _name)
     {
         userName = _name;
         Connect(_ip, _port);
+        sceneMgr.ToMainmenu();
         //GetComponent<GameData>().inventory1 = 1;
         //GetComponent<GameData>().inventory2 = 0;
         //GetComponent<GameData>().inventorychoice = 1;
@@ -91,7 +100,7 @@ public class Client_Demo : MonoBehaviour
             PlayerManager me = playersList[0];
             if (me == null)
                 return;
-
+            // TODO: use playerManager's childObject 
             Vector3 bulletPos = new Vector3(0, 0, 0);
             foreach (Transform child in me.gameObject.transform)
             {
@@ -127,6 +136,18 @@ public class Client_Demo : MonoBehaviour
             m_NetworkWriter.Write(me.velocity.x);
             m_NetworkWriter.Write(me.velocity.y);
             m_NetworkWriter.Write(me.velocity.z);
+            m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
+        }
+    }
+
+    public void GetConnectionSceneInfo()
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            PlayerManager me = playersList[0];
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_GETCONNECTSCENEINFO);
+
+            // step 9 : Instead of sending x,y,w ..... , send the server version instead (x,y,w,velocity, angular velocity)
             m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
         }
     }
@@ -187,7 +208,7 @@ public class Client_Demo : MonoBehaviour
             }
         }
 
-        //Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
+        Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
     }
 
 
@@ -291,33 +312,36 @@ public class Client_Demo : MonoBehaviour
                     uint id = m_NetworkReader.ReadUInt32();
                     PlayerManager mgr = playersList[0];
                     mgr.pid = id;
-                    mgr.position = m_NetworkReader.ReadVector3();
-                    int playerCount = m_NetworkReader.ReadInt32();
+                    //mgr.position = m_NetworkReader.ReadVector3();
+                    //int playerCount = m_NetworkReader.ReadInt32();
 
-                    for (int i = 0; i < playerCount; ++i)
-                    {
-                        GameObject otherPlayer = Instantiate(playerReference);
-                        PlayerManager otherManager = otherPlayer.GetComponent<PlayerManager>();
-                        otherManager.pid = m_NetworkReader.ReadUInt32();
-                        otherManager.position = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
-                        otherManager.pRotation = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
-                        otherManager.pName = m_NetworkReader.ReadString();
-                        playersList.Add(otherManager);
-                    }
+                    //for (int i = 0; i < playerCount; ++i)
+                    //{
+                    //    GameObject otherPlayer = Instantiate(playerReference);
+                    //    PlayerManager otherManager = otherPlayer.GetComponent<PlayerManager>();
+                    //    otherManager.pid = m_NetworkReader.ReadUInt32();
+                    //    otherManager.position = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                    //    otherManager.pRotation = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                    //    otherManager.pName = m_NetworkReader.ReadString();
+                    //    playersList.Add(otherManager);
+                    //}
 
-                    int enemyCount = m_NetworkReader.ReadInt32();
+                    //int enemyCount = m_NetworkReader.ReadInt32();
 
-                    for (int i = 0; i < enemyCount; ++i)
-                    {
-                        GameObject enemy = Instantiate(enemyReference);
-                        EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
-                        enemyManager.pid = m_NetworkReader.ReadUInt32();
-                        Debug.Log("ID: " + enemyManager.pid);
-                        enemyManager.ePosition = m_NetworkReader.ReadVector3();
-                        enemyManager.eRotation = m_NetworkReader.ReadVector3();
-                        enemyList.Add(enemyManager);
-                    }
-                    SendInitialStats();
+                    //for (int i = 0; i < enemyCount; ++i)
+                    //{
+                    //    GameObject enemy = Instantiate(enemyReference);
+                    //    EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+                    //    enemyManager.pid = m_NetworkReader.ReadUInt32();
+                    //    Debug.Log("ID: " + enemyManager.pid);
+                    //    enemyManager.ePosition = m_NetworkReader.ReadVector3();
+                    //    enemyManager.eRotation = m_NetworkReader.ReadVector3();
+                    //    GameObject enemyUICanvas = GameObject.Find("EnemyUI");
+                    //    BillBoard billboard = enemyUICanvas.GetComponent<BillBoard>();
+                    //    billboard.camera = m_MainCamera;
+                    //    enemyList.Add(enemyManager);
+                    //}
+                    //SendInitialStats();
                     break;
 
                 case (byte)Packets_ID.ID_MOVEMENT:
@@ -446,7 +470,7 @@ public class Client_Demo : MonoBehaviour
                                 enemy.gameObject.transform.eulerAngles = rotation;
                                 enemy.sm.SetCurrentState(currentState);
                                 enemy.hp = hp;
-                                Debug.Log("Enemy HP: " + hp);
+                                //Debug.Log("Enemy HP: " + hp);
                                 break;
                             }
                         }
@@ -501,6 +525,36 @@ public class Client_Demo : MonoBehaviour
                     }
                     break;
 
+
+                case (byte)Packets_ID.ID_SENDCONNECTSCENEINFO:
+                    {
+                        int playerCount = m_NetworkReader.ReadInt32();
+                        GameObject[] playerDisplayList;
+                        playerDisplayList = GameObject.FindGameObjectsWithTag("PlayerConnectionDisplay");
+                        PlayerManager me = playersList[0];
+                        Text clientName = playerDisplayList[0].transform.Find("PlayerName").GetComponent<Text>();
+                        clientName.text = "" + me.pName;
+
+                        Text clientStatus = playerDisplayList[0].transform.Find("Status").GetComponent<Text>();
+                        clientStatus.text = "" + "Not In-Game";
+
+                        for (int i = 0; i < playerCount; ++i)
+                        {
+                            GameObject otherPlayer = Instantiate(playerReference);
+                            PlayerManager otherManager = otherPlayer.GetComponent<PlayerManager>();
+                            otherManager.pid = m_NetworkReader.ReadUInt32();
+                            otherManager.pName = m_NetworkReader.ReadString();
+                            string status = m_NetworkReader.ReadString();
+
+
+                            Text playerName = playerDisplayList[i + 1].transform.Find("PlayerName").GetComponent<Text>();
+                            playerName.text = "" + otherManager.pName;
+                            Text displayStatus = playerDisplayList[i + 1].transform.Find("Status").GetComponent<Text>();
+                            displayStatus.text = "" + status;
+                            playersList.Add(otherManager);
+                        }
+                    }
+                    break;
                     //end
             }
         }

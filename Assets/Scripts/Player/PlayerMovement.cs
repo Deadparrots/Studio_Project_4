@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector3 velocity;
     private Vector3 rotation;
+    private Vector3 defaultScale;
     //Task 2 Step 1
     // Add new variables
     public Vector3 server_pos;
@@ -38,6 +39,11 @@ public class PlayerMovement : MonoBehaviour
     {
         get { return rotation; }
         set { rotation = value; }
+    }
+
+    public Vector3 GetDefScale()
+    {
+        return defaultScale;
     }
 
     public int Init(bool _isPlayer)
@@ -163,7 +169,10 @@ public class PlayerMovement : MonoBehaviour
             transform.eulerAngles = new Vector3(serverRotation.x, serverRotation.y, serverRotation.z);
             //serverRotation.Set(0, 0, 0);
         }
+    }
 
-
+    private void Awake()
+    {
+        defaultScale = gameObject.transform.lossyScale; //either lossyScale or local Scale?
     }
 }
