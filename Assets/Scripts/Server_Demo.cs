@@ -21,6 +21,7 @@ public class playerObject
     public float rotation_z;
     public bool inConnectionScene;
     public bool inGameplayScene;
+    public float hp;
     public playerObject(uint _id)
     {
         this.playerNum = 1;
@@ -31,6 +32,7 @@ public class playerObject
         name = "";
         velocity_X = velocity_Y = velocity_Z = 0.0f;
         rotation_x = rotation_y = rotation_z = 0.0f;
+        hp = 100;
     }
 }
 
@@ -69,10 +71,12 @@ public struct SpawnPoint
 {
     public bool active;
     public Vector3 position;
+    public Vector3 rotation;
     public SpawnPoint(bool _active)
     {
         active = _active;
-        position = new Vector3(0,0,0);
+        position = new Vector3(0, 0, 0);
+        rotation = new Vector3(0, 0, 0);
     }
 }
 
@@ -95,56 +99,18 @@ public class Server_Demo : MonoBehaviour
     public List<SpawnPoint> spawnPointList = new List<SpawnPoint>();
     const int MAX_PLAYERS = 4;
     int totalWaypoints = 0;
+    bool gameStarted = false;
+    private SceneManagement sceneMgr;
     private void Awake()
     {
         Instance = this;
+        sceneMgr = gameObject.GetComponent<SceneManagement>();
+        Debug.Log("Server got scene manager");
     }
 
     public void Init(int _port)
     {
         StartServer("127.0.0.1", _port, MAX_PLAYERS);
-
-        //for(int i = 0; i < 5; ++i)
-        //{
-        //    EnemyAI newAI = new EnemyAI();
-        //}
-        GameObject[] waypointPathGOs;
-        waypointPathGOs = GameObject.FindGameObjectsWithTag("WaypointPath");
-
-        foreach(GameObject waypointPath in waypointPathGOs)
-        {
-
-            WaypointPath temp = new WaypointPath();
-
-            foreach(Transform waypoint in waypointPath.transform)
-            {
-                temp.wayPoints.Add(waypoint);
-            }
-
-            waypointPathsList.Add(temp);
-        }
-
-        foreach (EnemyAI enemy in GameObject.FindObjectsOfType(typeof(EnemyAI)))
-        {
-            enemy.pid = enemyID;
-            enemy.controller = true;
-            enemy.WayPoints = waypointPathsList[0].wayPoints;
-            enemy.WaypointIndex = 0;
-            enemyList.Add(enemy);
-            ++enemyID;
-        }
-
-        GameObject[] spawnPoints;
-        spawnPoints = GameObject.FindGameObjectsWithTag("Spawnpoint");
-
-        foreach(GameObject spawn in spawnPoints)
-        {
-            SpawnPoint spawnpoint = new SpawnPoint();
-            spawnpoint.active = true;
-            spawnpoint.position = spawn.transform.position;
-            Debug.Log("SPawnpoint position: " + spawnpoint.position);
-            spawnPointList.Add(spawnpoint);
-        }
     }
 
     public void StopServer()
@@ -226,7 +192,7 @@ public class Server_Demo : MonoBehaviour
         {
             //ChangeScene("Scene2");
             //DestroyEnemy(2);
-            ChangeScene("SP4");
+            InitialiseGameScene();
         }
 
         if (Input.GetKeyDown("f"))
@@ -258,7 +224,7 @@ public class Server_Demo : MonoBehaviour
         {
             if (packet_id == (byte)RakNet_Packets_ID.NEW_INCOMING_CONNECTION)
             {
-                OnConnected();//добавляем соединение
+                OnConnected();
             }
 
             if (packet_id == (byte)RakNet_Packets_ID.CONNECTION_LOST || packet_id == (byte)RakNet_Packets_ID.DISCONNECTION_NOTIFICATION)
@@ -289,6 +255,9 @@ public class Server_Demo : MonoBehaviour
                     break;
                 case (byte)Packets_ID.ID_GETCONNECTSCENEINFO:
                     SendConnectionSceneInfo(peer.incomingGUID);
+                    break;
+                case (byte)Packets_ID.ID_GETGAMEPLAYSCENEINFO:
+                    SendGameplaySceneInfo(peer.incomingGUID);
                     break;
             }
 
@@ -458,6 +427,114 @@ public class Server_Demo : MonoBehaviour
         }
     }
 
+    private void InitialiseGameScene()
+    {
+        sceneMgr.ToGame();
+
+        GameObject[] waypointPathGOs;
+        waypointPathGOs = GameObject.FindGameObjectsWithTag("WaypointPath");
+
+        foreach (GameObject waypointPath in waypointPathGOs)
+        {
+
+            WaypointPath temp = new WaypointPath();
+
+            foreach (Transform waypoint in waypointPath.transform)
+            {
+                temp.wayPoints.Add(waypoint);
+            }
+
+            waypointPathsList.Add(temp);
+        }
+
+        foreach (EnemyAI enemy in GameObject.FindObjectsOfType(typeof(EnemyAI)))
+        {
+            enemy.pid = enemyID;
+            enemy.controller = true;
+            enemy.WayPoints = waypointPathsList[0].wayPoints;
+            enemy.WaypointIndex = 0;
+            enemyList.Add(enemy);
+            ++enemyID;
+        }
+
+        GameObject[] spawnPoints;
+        spawnPoints = GameObject.FindGameObjectsWithTag("Spawnpoint");
+
+        foreach (GameObject spawn in spawnPoints)
+        {
+            SpawnPoint spawnpoint = new SpawnPoint();
+            spawnpoint.active = true;
+            spawnpoint.position = spawn.transform.position;
+            Debug.Log("Spawnpoint position: " + spawnpoint.position);
+            spawnPointList.Add(spawnpoint);
+        }
+
+        gameStarted = true;
+    }
+
+    private void SendGameplaySceneInfo(ulong guid)
+    {
+        if (!gameStarted)
+            InitialiseGameScene();
+
+        if (m_NetworkWriter.StartWritting())
+        {
+
+
+            playerObject client = clients[guid];
+            client.inGameplayScene = true;
+
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SENDGAMEPLAYSCENEINFO);
+
+            int spawnPoint = Random.Range(0, spawnPointList.Count - 1);
+            Vector3 spawnPointPos = spawnPointList[spawnPoint].position;
+            Vector3 spawnPointRot = spawnPointList[spawnPoint].rotation;
+            client.m_x = spawnPointPos.x;
+            client.m_y = spawnPointPos.y;
+            client.m_z = spawnPointPos.z;
+
+            client.rotation_x = spawnPointRot.x;
+            client.rotation_y = spawnPointRot.y;
+            client.rotation_z = spawnPointRot.z;
+
+            clients[guid] = client;
+
+            m_NetworkWriter.Write(spawnPointPos);
+            m_NetworkWriter.Write(spawnPointRot);
+            int playersInGameplayScene = 0;
+
+            // TODO: Set clients position and rotation according to a random spawn point
+
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inGameplayScene == true && playerObj.id != client.id)
+                {
+                    ++playersInGameplayScene;
+                }
+            }
+
+            m_NetworkWriter.Write(playersInGameplayScene);
+
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inGameplayScene == true && playerObj.id != client.id)
+                {
+                    m_NetworkWriter.Write(playerObj.id);    // for identifying other players in client
+                    m_NetworkWriter.Write(playerObj.m_x);
+                    m_NetworkWriter.Write(playerObj.m_y);
+                    m_NetworkWriter.Write(playerObj.m_z);
+                    m_NetworkWriter.Write(playerObj.rotation_x);
+                    m_NetworkWriter.Write(playerObj.rotation_y);
+                    m_NetworkWriter.Write(playerObj.rotation_z);
+                    //m_NetworkWriter.Write(playerObj.hp);  // TODO
+
+                }
+            }
+            peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            SendNewGameplayPlayerInfo(guid);
+        }
+    }
+
     private void SendConnectionPlayerInfo(ulong guid)
     {
         if (m_NetworkWriter.StartWritting())
@@ -468,8 +545,34 @@ public class Server_Demo : MonoBehaviour
                 if (playerObj.inConnectionScene == true && playerObj.id != client.id)
                 {
                     m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWCONNECTPLAYER);
+                    m_NetworkWriter.Write(playerObj.id);    
+                    m_NetworkWriter.Write(playerObj.m_x);
+                    m_NetworkWriter.Write(playerObj.m_y);
+                    m_NetworkWriter.Write(playerObj.m_z);
+                    m_NetworkWriter.Write(playerObj.rotation_x);
+                    m_NetworkWriter.Write(playerObj.rotation_y);
+                    m_NetworkWriter.Write(playerObj.rotation_z);
+                    peer.SendData(GetGUID(playerObj), Peer.Reliability.Reliable, 0, m_NetworkWriter);
+                }
+            }
+        }
+    }
+
+    private void SendNewGameplayPlayerInfo(ulong guid)  // send info of new player joining gameplay scene
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            playerObject client = clients[guid];
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inGameplayScene == true && playerObj.id != client.id)
+                {
+                    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWGAMEPLAYPLAYER);
                     m_NetworkWriter.Write(client.id);
-                    m_NetworkWriter.Write(client.name);
+                    Vector3 position = new Vector3(client.m_x, client.m_y, client.m_z);
+                    Vector3 rotation = new Vector3(client.rotation_x, client.rotation_y, client.rotation_z);
+                    m_NetworkWriter.Write(position);
+                    m_NetworkWriter.Write(rotation);
                     peer.SendData(GetGUID(playerObj), Peer.Reliability.Reliable, 0, m_NetworkWriter);
                 }
             }

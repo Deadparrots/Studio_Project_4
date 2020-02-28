@@ -37,7 +37,7 @@ public class SceneManagement : MonoBehaviour
 
     private void ChangeScene(string sceneName)
     {
-        //if (currentScene != "")
+        if (currentScene != "")
             Unload(currentScene);
 
         if (Application.CanStreamedLevelBeLoaded(sceneName))

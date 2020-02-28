@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6590968707339377251}
   - component: {fileID: 6590968707339377250}
+  - component: {fileID: -8392191581575736125}
   m_Layer: 0
   m_Name: Server
   m_TagString: Untagged
@@ -44,12 +45,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Info: {fileID: 0}
-  waypointPaths:
-  - wayPoints:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-  - wayPoints: []
   connections: []
   guids: 
+--- !u!114 &-8392191581575736125
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6590968707339377249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1f20b4fc0cc8e0478a922d0b58fb347, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

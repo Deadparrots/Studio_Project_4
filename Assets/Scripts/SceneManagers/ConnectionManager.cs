@@ -19,5 +19,6 @@ public class ConnectionManager : MonoBehaviour
     public void StartGame()
     {
         Client_Demo.Instance.GetSceneManager().ToGame();
+        Client_Demo.Instance.GetGameplaySceneInfo();
     }
 }

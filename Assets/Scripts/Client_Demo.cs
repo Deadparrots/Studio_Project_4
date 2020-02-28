@@ -36,7 +36,6 @@ public class Client_Demo : MonoBehaviour
     private float delta = 0.0f;
     private string userName;
     Camera m_MainCamera;
-    string currScene;
     SceneManagement sceneMgr;
     private void Awake()
     {
@@ -148,6 +147,16 @@ public class Client_Demo : MonoBehaviour
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_GETCONNECTSCENEINFO);
 
             // step 9 : Instead of sending x,y,w ..... , send the server version instead (x,y,w,velocity, angular velocity)
+            m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
+        }
+    }
+
+    public void GetGameplaySceneInfo()
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            PlayerManager me = playersList[0];
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_GETGAMEPLAYSCENEINFO);
             m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
         }
     }
@@ -576,6 +585,55 @@ public class Client_Demo : MonoBehaviour
                                 name.text = "" + otherManager.pName;
                                 Text status = display.transform.Find("Status").GetComponent<Text>();
                                 status.text = "" + "Not In-Game";
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+
+
+                case (byte)Packets_ID.ID_SENDGAMEPLAYSCENEINFO:
+                    {
+                        PlayerManager me = playersList[0];
+                        me.position = m_NetworkReader.ReadVector3();
+                        me.pRotation = m_NetworkReader.ReadVector3();
+
+                        int playerCount = m_NetworkReader.ReadInt32();
+
+                        for (int i = 0; i < playerCount; ++i)
+                        {
+                            uint pid = m_NetworkReader.ReadUInt32();
+                            Vector3 position = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+                            Vector3 rotation = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
+
+                            foreach(PlayerManager player in playersList)
+                            {
+                                if(player.pid == pid)
+                                {
+                                    player.position = position;
+                                    player.pRotation = rotation;
+                                    // TODO: Set health
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+
+
+                case (byte)Packets_ID.ID_NEWGAMEPLAYPLAYER:
+                    {
+                        uint pid = m_NetworkReader.ReadUInt32();
+                        Vector3 position = m_NetworkReader.ReadVector3();
+                        Vector3 rotation = m_NetworkReader.ReadVector3();
+
+                        foreach(PlayerManager player in playersList)
+                        {
+                            if(player.pid == pid)
+                            {
+                                player.position = position;
+                                player.pRotation = rotation;
                                 break;
                             }
                         }
