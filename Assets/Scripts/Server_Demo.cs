@@ -474,12 +474,12 @@ public class Server_Demo : MonoBehaviour
 
     private void SendGameplaySceneInfo(ulong guid)
     {
-        if (!gameStarted)
-            InitialiseGameScene();
+
 
         if (m_NetworkWriter.StartWritting())
         {
-
+            if (!gameStarted)
+                InitialiseGameScene();
 
             playerObject client = clients[guid];
             client.inGameplayScene = true;
