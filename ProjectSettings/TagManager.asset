@@ -7,10 +7,6 @@ TagManager:
   - UIMaster
   - Enemy
   - WaypointPath
-  - EnemyWeapon
-  - Spawnpoint
-  - EnemyWeapon
-  - PlayerConnectionDisplay
   layers:
   - Default
   - TransparentFX
