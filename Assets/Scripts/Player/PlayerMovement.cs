@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isPlayer = false;
 
-    private Vector3 velocity;
+    private Vector3 velocity = new Vector3();
     private Vector3 rotation;
     private Vector3 defaultScale;
     //Task 2 Step 1
@@ -99,6 +99,11 @@ public class PlayerMovement : MonoBehaviour
             {
                 print("d key is held down");
                 velocity.x = movementSpeed;
+            }
+
+            if (velocity.magnitude > 0)
+            {
+                velocity = velocity * (movementSpeed / velocity.magnitude);
             }
 
 
