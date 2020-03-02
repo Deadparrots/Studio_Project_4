@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Buttons : MonoBehaviour
+public class KeyBindingsButton : MonoBehaviour
 {
     public bool isToggle;
     public string actionSet;
     public bool SettingAction;
     public Text text;
-    public Toggle toggle;
-
+    public Toggle toggle; // Using this to untoggle itself
+    private string originaltext; // Might be temporary.
     // Start is called before the first frame update
     void Start()
     {
         SettingAction = false;
+        originaltext = text.text;
+        text.text = originaltext + PlayerPrefs.GetString(actionSet);
     }
 
     public void SetAction(bool _SettingAction)
@@ -47,7 +49,7 @@ public class Buttons : MonoBehaviour
                     return;
                 }
                 InputManager.inputManager.SetKeyCode(actionSet, input);
-                text.text = input;
+                text.text = originaltext + input;
                 toggle.isOn = false;
             }
         }
