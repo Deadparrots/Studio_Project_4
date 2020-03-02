@@ -77,6 +77,7 @@ public class LevelGenRewrite : MonoBehaviour
         GameObject temporary = Instantiate(Spawn);
         temporary.transform.position = ConvertToWorldPos(GeneratedRooms[SpawnPoint].position)
             + new Vector3(GeneratedRooms[SpawnPoint].SizeX * 5, 0, GeneratedRooms[SpawnPoint].SizeY * 5);
+    
 
         int EndPoint = Random.Range(0, GeneratedRooms.Count);
         temporary = Instantiate(Exit);
