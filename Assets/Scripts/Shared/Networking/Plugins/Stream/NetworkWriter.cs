@@ -34,7 +34,6 @@ public class NetworkWriter
         Position = 0;
         SetLength(0L);
         return true;
-
     }
 
     public void Send(ulong guid, Peer.Priority priority, Peer.Reliability method, sbyte channel)

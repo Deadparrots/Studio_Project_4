@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using StateStuff;
+using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     private List<playerObject> playerList = new List<playerObject>();
@@ -11,6 +12,7 @@ public class EnemyAI : MonoBehaviour
     private float healthPoints = 150;
     private float damage = 25;
     private float movementSpeed = 10000;
+    public NavMeshAgent agent;
     public StateMachine<EnemyAI> sm {get;set;}
     // Start is called before the first frame update
 
@@ -44,6 +46,9 @@ public class EnemyAI : MonoBehaviour
         sm.SetNextState("Patrol");
         isController = false;
         anim = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = true;
+        agent.updatePosition = true;
     }
 
     public uint pid

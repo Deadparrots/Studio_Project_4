@@ -23,10 +23,11 @@ public class PatrolState : State<EnemyAI>
     }
     public override void Update(double dt)
     {
-        Vector3 movementDirection = (m_go.WayPoints[m_go.WaypointIndex].position - m_go.position).normalized;
-        movementDirection.y = 0;
-        m_go.position += movementDirection * (float)dt;
-        m_go.FaceTarget(m_go.WayPoints[m_go.WaypointIndex].position);
+        //Vector3 movementDirection = (m_go.WayPoints[m_go.WaypointIndex].position - m_go.position).normalized;
+        //movementDirection.y = 0;
+        //m_go.position += movementDirection * (float)dt;
+        m_go.agent.SetDestination(m_go.WayPoints[m_go.WaypointIndex].position);
+        //m_go.FaceTarget(m_go.WayPoints[m_go.WaypointIndex].position);
 
         if (m_go.hp <= 0)
             m_go.sm.SetNextState("Dead");

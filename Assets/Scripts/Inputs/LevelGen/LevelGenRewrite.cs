@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class LevelGenRewrite : MonoBehaviour
 {
-
+    public NavMeshSurface surface;
     private struct RoomRequirements
     {
         public int ConnectorIndex;
@@ -36,6 +37,8 @@ public class LevelGenRewrite : MonoBehaviour
     {
         //TODO: Move this function call to the client when it recieves a generate map packet.
         GenerateMap(10, 1);
+        if(surface)
+            surface.BuildNavMesh();
     }
 
     public void GenerateMap(int _GridSize, int _Seed)

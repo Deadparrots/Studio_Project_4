@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Peer;
 using UnityEngine.UI;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+
 
 public class playerObject
 {
@@ -449,6 +451,7 @@ public class Server_Demo : MonoBehaviour
             enemy.controller = true;
             enemy.WayPoints = waypointPathsList[0].wayPoints;
             enemy.WaypointIndex = 0;
+            enemy.GetComponent<NavMeshAgent>().Warp(enemy.position);
             enemyList.Add(enemy);
             ++enemyID;
         }
