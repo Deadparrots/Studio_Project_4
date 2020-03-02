@@ -475,7 +475,7 @@ public class Client_Demo : MonoBehaviour
                         {
                             if (enemy.pid == enemyID)
                             {
-                                enemy.ePosition = position;
+                                enemy.position = position;
                                 enemy.gameObject.transform.eulerAngles = rotation;
                                 enemy.sm.SetCurrentState(currentState);
                                 enemy.hp = hp;

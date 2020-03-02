@@ -190,16 +190,12 @@ public class Server_Demo : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-            //ChangeScene("Scene2");
-            //DestroyEnemy(2);
-            InitialiseGameScene();
+            //InitialiseGameScene();
         }
 
         if (Input.GetKeyDown("f"))
         {
-            //ChangeScene("Scene2");
-            //DestroyEnemy(2);
-            enemyList[0].sm.SetNextState("Dead");
+            //enemyList[0].sm.SetNextState("Dead");
         }
 
         foreach (EnemyAI enemy in enemyList)
@@ -474,8 +470,6 @@ public class Server_Demo : MonoBehaviour
 
     private void SendGameplaySceneInfo(ulong guid)
     {
-
-
         if (m_NetworkWriter.StartWritting())
         {
             if (!gameStarted)

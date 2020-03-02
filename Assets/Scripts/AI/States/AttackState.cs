@@ -35,7 +35,7 @@ public class AttackState : State<EnemyAI>
                 foreach (playerObject player in m_go.PlayerList)
                 {
                     playerPos.Set(player.m_x, player.m_y, player.m_z);
-                    float DistanceSquared = (playerPos - m_go.ePosition).sqrMagnitude;
+                    float DistanceSquared = (playerPos - m_go.position).sqrMagnitude;
                     if (DistanceSquared < shortestDistanceSquared)
                     {
                         shortestDistanceSquared = DistanceSquared;

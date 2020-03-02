@@ -23,9 +23,9 @@ public class PatrolState : State<EnemyAI>
     }
     public override void Update(double dt)
     {
-        Vector3 movementDirection = (m_go.WayPoints[m_go.WaypointIndex].position - m_go.ePosition).normalized;
+        Vector3 movementDirection = (m_go.WayPoints[m_go.WaypointIndex].position - m_go.position).normalized;
         movementDirection.y = 0;
-        m_go.ePosition += movementDirection * (float)dt;
+        m_go.position += movementDirection * (float)dt;
         m_go.FaceTarget(m_go.WayPoints[m_go.WaypointIndex].position);
 
         if (m_go.hp <= 0)
@@ -37,7 +37,7 @@ public class PatrolState : State<EnemyAI>
                 foreach (playerObject player in m_go.PlayerList)
                 {
                     Vector3 playerPos = new Vector3(player.m_x, player.m_y, player.m_z);
-                    float DistanceSquared = (playerPos - m_go.ePosition).sqrMagnitude;
+                    float DistanceSquared = (playerPos - m_go.position).sqrMagnitude;
                     if (DistanceSquared < m_go.EngagementRangeSquared)
                     {
                         m_go.sm.SetNextState("Chase");
