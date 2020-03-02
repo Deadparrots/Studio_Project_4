@@ -778,6 +778,7 @@ public class Server_Demo : MonoBehaviour
             if (enemy.pid == enemyID)
             {
                 enemy.hp -= dmg;
+                break;
             }
         }
 
@@ -798,6 +799,20 @@ public class Server_Demo : MonoBehaviour
     public void DestroyBreakable()
     {
 
+    }
+
+    public void DestroyHealthPickUp(uint playerID,uint pickupID)
+    {
+        if(m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYHEALTHPICKUP);
+            m_NetworkWriter.Write(playerID);
+            m_NetworkWriter.Write(pickupID);
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
     }
 
     public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation,string currentState,float hp)
