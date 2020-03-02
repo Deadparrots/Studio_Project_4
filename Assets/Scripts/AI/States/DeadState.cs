@@ -23,7 +23,7 @@ public class DeadState : State<EnemyAI>
     public override void Enter()
     {
         timer = deathTimer;
-        Server_Demo.Instance.spawnPickup(m_go.ePosition);
+        Server_Demo.Instance.spawnPickup(m_go.position);
     }
     public override void Update(double dt)
     {

@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using StateStuff;
+using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     private List<playerObject> playerList = new List<playerObject>();
 
     private uint id;
-    private Vector3 rotation;
-    private Vector3 position;
     private bool isController;
     private float healthPoints = 150;
     private float damage = 25;
     private float movementSpeed = 10000;
+    public NavMeshAgent agent;
     public StateMachine<EnemyAI> sm {get;set;}
     // Start is called before the first frame update
 
@@ -32,9 +32,8 @@ public class EnemyAI : MonoBehaviour
     Animator anim;
     private void Awake()
     {
-        position = gameObject.transform.position;
-        rotation = gameObject.transform.rotation.eulerAngles;
-        rotation.y -= 180;
+        Debug.Log("Enemy starting position: " + gameObject.transform.position);
+        //rotation.y -= 180;
     }
     void Start()
     {
@@ -47,6 +46,9 @@ public class EnemyAI : MonoBehaviour
         sm.SetNextState("Patrol");
         isController = false;
         anim = GetComponent<Animator>();
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = true;
+        agent.updatePosition = true;
     }
 
     public uint pid
@@ -79,15 +81,15 @@ public class EnemyAI : MonoBehaviour
         set { movementSpeed = value; }
     }
 
-    public Vector3 eRotation
+    public Vector3 rotation
     {
-        get { return rotation; }
-        set { rotation = value; }
+        get { return gameObject.transform.eulerAngles; }
+        set { gameObject.transform.eulerAngles = value; }
     }
-    public Vector3 ePosition
+    public Vector3 position
     {
-        get { return position; }
-        set { position = value; }
+        get { return gameObject.transform.position; }
+        set { gameObject.transform.position = value; }
     }
 
     public float EngagementRangeSquared
@@ -121,10 +123,8 @@ public class EnemyAI : MonoBehaviour
             Server_Demo.Instance.UpdateEnemyInClient(id, position, rotation,sm.GetCurrentState(),healthPoints);
         }
 
-
-        gameObject.transform.position = position;
         //gameObject.transform.eulerAngles = rotation;
-        rotation = gameObject.transform.rotation.eulerAngles;
+        //rotation = gameObject.transform.rotation.eulerAngles;
 
         if (sm.GetCurrentState() == "Patrol" || sm.GetCurrentState() == "Chase")
         {
@@ -229,7 +229,7 @@ public class EnemyAI : MonoBehaviour
     {
         Vector3 direction = (targetPosition - position).normalized;
         Quaternion lookRotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        rotation.y += (lookRotation.eulerAngles.y * 5.0f * Time.deltaTime);
+        //rotation.y += (lookRotation.eulerAngles.y * 5.0f * Time.deltaTime);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5.0f);
     }
 }

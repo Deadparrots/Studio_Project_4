@@ -475,7 +475,7 @@ public class Client_Demo : MonoBehaviour
                         {
                             if (enemy.pid == enemyID)
                             {
-                                enemy.ePosition = position;
+                                enemy.position = position;
                                 enemy.gameObject.transform.eulerAngles = rotation;
                                 enemy.sm.SetCurrentState(currentState);
                                 enemy.hp = hp;
@@ -634,6 +634,31 @@ public class Client_Demo : MonoBehaviour
                             {
                                 player.position = position;
                                 player.pRotation = rotation;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_DESTROYHEALTHPICKUP:
+                    {
+                        uint playerPID = m_NetworkReader.ReadUInt32();
+                        uint pickupPID = m_NetworkReader.ReadUInt32();
+
+                        foreach (PlayerManager player in playersList)
+                        {
+                            if (player.pid == playerPID)
+                            {
+                                foreach(PickupManager pickup in pickupList)
+                                {
+                                    if(pickup.pid == pickupPID)
+                                    {
+                                        player.hp += pickup.GetHeal();
+                                        pickupList.Remove(pickup);
+                                        Destroy(pickup.gameObject);
+                                        break;
+                                    }
+                                }
                                 break;
                             }
                         }

@@ -6,6 +6,7 @@ public class PickupManager : MonoBehaviour
 {
     private uint id;
     private Vector3 position;
+    private float heal = 25.0f;
     public uint pid
     {
         get { return id; }
@@ -15,6 +16,11 @@ public class PickupManager : MonoBehaviour
     {
         get { return position; }
         set { position = value; }
+    }
+
+    public float GetHeal()
+    {
+        return heal;
     }
 
     private void Update()

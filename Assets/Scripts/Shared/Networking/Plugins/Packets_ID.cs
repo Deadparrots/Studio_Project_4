@@ -33,6 +33,8 @@ public enum Packets_ID : byte
     ID_SENDGAMEPLAYSCENEINFO,
     ID_NEWGAMEPLAYPLAYER,
 
+    ID_DESTROYHEALTHPICKUP
+
     /* unused in demo
     NET_SERVER_INFO,
     NET_CHAT_MESSAGE,

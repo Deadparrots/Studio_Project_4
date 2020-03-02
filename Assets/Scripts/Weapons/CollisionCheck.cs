@@ -51,7 +51,19 @@ public class CollisionCheck : MonoBehaviour
             }
             else if(collision.gameObject.name == "breakable")
             {
+                // TODO: Destroy breakable
+            }
+        }
 
+        if(collision.gameObject.tag.Equals("PickUp"))
+        {
+            PickupManager pickup = gameObject.GetComponent<PickupManager>();
+            if (gameObject.name == "Player(Clone)")
+            {
+                PlayerManager player = gameObject.GetComponent<PlayerManager>();
+
+                // TODO: Destroy Pickups
+                Server_Demo.Instance.DestroyHealthPickUp(player.pid, pickup.pid);
             }
         }
     }

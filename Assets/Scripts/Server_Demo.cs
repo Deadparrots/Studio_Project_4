@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Peer;
 using UnityEngine.UI;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+
 
 public class playerObject
 {
@@ -190,16 +192,12 @@ public class Server_Demo : MonoBehaviour
 
         if (Input.GetKeyDown("space"))
         {
-            //ChangeScene("Scene2");
-            //DestroyEnemy(2);
-            InitialiseGameScene();
+            //InitialiseGameScene();
         }
 
         if (Input.GetKeyDown("f"))
         {
-            //ChangeScene("Scene2");
-            //DestroyEnemy(2);
-            enemyList[0].sm.SetNextState("Dead");
+            //enemyList[0].sm.SetNextState("Dead");
         }
 
         foreach (EnemyAI enemy in enemyList)
@@ -453,6 +451,7 @@ public class Server_Demo : MonoBehaviour
             enemy.controller = true;
             enemy.WayPoints = waypointPathsList[0].wayPoints;
             enemy.WaypointIndex = 0;
+            enemy.GetComponent<NavMeshAgent>().Warp(enemy.position);
             enemyList.Add(enemy);
             ++enemyID;
         }
@@ -474,8 +473,6 @@ public class Server_Demo : MonoBehaviour
 
     private void SendGameplaySceneInfo(ulong guid)
     {
-
-
         if (m_NetworkWriter.StartWritting())
         {
             if (!gameStarted)
@@ -778,6 +775,7 @@ public class Server_Demo : MonoBehaviour
             if (enemy.pid == enemyID)
             {
                 enemy.hp -= dmg;
+                break;
             }
         }
 
@@ -798,6 +796,20 @@ public class Server_Demo : MonoBehaviour
     public void DestroyBreakable()
     {
 
+    }
+
+    public void DestroyHealthPickUp(uint playerID,uint pickupID)
+    {
+        if(m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYHEALTHPICKUP);
+            m_NetworkWriter.Write(playerID);
+            m_NetworkWriter.Write(pickupID);
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
     }
 
     public void UpdateEnemyInClient(uint enemyID, Vector3 position,Vector3 rotation,string currentState,float hp)

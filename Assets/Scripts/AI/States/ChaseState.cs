@@ -35,7 +35,7 @@ public class ChaseState : State<EnemyAI>
                 foreach (playerObject player in m_go.PlayerList)
                 {
                     playerPos.Set(player.m_x, player.m_y, player.m_z);
-                    float DistanceSquared = (playerPos - m_go.ePosition).sqrMagnitude;
+                    float DistanceSquared = (playerPos - m_go.position).sqrMagnitude;
                     if (DistanceSquared < shortestDistanceSquared)
                     {
                         shortestDistanceSquared = DistanceSquared;
@@ -43,10 +43,12 @@ public class ChaseState : State<EnemyAI>
                     }
                 }
 
-                Vector3 movementDirection = (playerPos - m_go.ePosition).normalized;
-                movementDirection.y = 0;
-                m_go.ePosition += movementDirection * (float)dt;
-                m_go.FaceTarget(playerPos);
+                //Vector3 movementDirection = (playerPos - m_go.position).normalized;
+                //movementDirection.y = 0;
+                //m_go.position += movementDirection * (float)dt;
+                //m_go.agent.SetDestination(playerPos);
+                m_go.agent.destination = playerPos;
+                //m_go.FaceTarget(playerPos);
 
                 if (shortestDistanceSquared > m_go.EngagementRangeSquared)
                 {
