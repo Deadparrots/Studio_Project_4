@@ -30,18 +30,29 @@ public class InputManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        MoveForward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveForward", "Space")); // Will Be Changed to something else later on
-        MoveUp = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveUp", "W"));
-        MoveDown  = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveDown", "S"));
-        MoveLeft  = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveLeft", "A"));
-        MoveRight = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveRight", "D"));
-
+        LoadKeyBindings();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        
+
+    }
+
+    public void SetKeyCode(string Name, string value)
+    {
+        PlayerPrefs.SetString(Name, value);
+        LoadKeyBindings(); // reload all bindings
+    }
+
+    void LoadKeyBindings()
+    {
+        //NOTE: PlayerPrefs.GetString("VariabletoGet", "DefaultValueifnonefound")
+        MoveForward = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveForward", "Space")); // Will Be Changed to something else later on
+        MoveUp = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveUp", "W"));
+        MoveDown = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveDown", "S"));
+        MoveLeft = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveLeft", "A"));
+        MoveRight = (KeyCode)System.Enum.Parse(typeof(KeyCode), PlayerPrefs.GetString("MoveRight", "D"));
     }
 
     // Update is called once per frame
