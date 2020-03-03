@@ -10,36 +10,48 @@ public class KeyBindingsButton : MonoBehaviour
     public bool SettingAction;
     public Text text;
     public Toggle toggle; // Using this to untoggle itself
-    private string originaltext; // Might be temporary.
+    private Event currEvent = new Event();
+    private KeyCode[] mouseKeys;
     // Start is called before the first frame update
     void Start()
     {
         SettingAction = false;
-        originaltext = text.text;
-        text.text = originaltext + PlayerPrefs.GetString(actionSet);
+        text.text = PlayerPrefs.GetString(actionSet);
+        mouseKeys = new KeyCode[] { KeyCode.Mouse0, KeyCode.Mouse1, KeyCode.Mouse2, KeyCode.Mouse3, KeyCode.Mouse4, KeyCode.Mouse5, KeyCode.Mouse6 };
     }
 
     public void SetAction(bool _SettingAction)
     {
         SettingAction = _SettingAction;
+        InputManager.inputManager.OnLastMenuLayer = !SettingAction; // temporary
     }
 
     // Update is called once per frame
-    void Update()
+    void Update() //TODO: Figure out how to do scroll wheel
     {
- 
-    }
-
-    private void OnGUI()
-    {
+        string input = null;
         if (SettingAction)
         {
-            Event e = Event.current;
+            Event.PopEvent(currEvent);
+            input = null;
 
-            if (e.keyCode == KeyCode.None)
-                return;
-
-            string input = e.keyCode.ToString();
+            if (currEvent.type == EventType.KeyDown)
+            {
+                if (currEvent.keyCode == KeyCode.None)
+                    return;
+                input = currEvent.keyCode.ToString();
+            }
+            else
+            {
+                for (int i = 0; mouseKeys.Length > i;i++) // For the 7 or so mousekeys since Events doesnt detect from mouse3 onwards
+                {
+                    if (Input.GetKeyDown(mouseKeys[i]))
+                    {
+                        input = mouseKeys[i].ToString();
+                        break;
+                    }
+                }
+            }
 
             if (!string.IsNullOrEmpty(input))
             {
@@ -49,7 +61,7 @@ public class KeyBindingsButton : MonoBehaviour
                     return;
                 }
                 InputManager.inputManager.SetKeyCode(actionSet, input);
-                text.text = originaltext + input;
+                text.text = input;
                 toggle.isOn = false;
             }
         }
