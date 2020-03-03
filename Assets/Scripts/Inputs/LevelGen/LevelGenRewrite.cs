@@ -80,7 +80,8 @@ public class LevelGenRewrite : MonoBehaviour
         GameObject temporary = Instantiate(Spawn);
         temporary.transform.position = ConvertToWorldPos(GeneratedRooms[SpawnPoint].position)
             + new Vector3(GeneratedRooms[SpawnPoint].SizeX * 5, 0, GeneratedRooms[SpawnPoint].SizeY * 5);
-    
+
+        Debug.Log("Starting room Generated");
 
         int EndPoint = Random.Range(0, GeneratedRooms.Count);
         temporary = Instantiate(Exit);
@@ -218,11 +219,11 @@ public class LevelGenRewrite : MonoBehaviour
 
     private void PrintInfo(RoomRewrite room)
     {
-        Debug.Log(room.name + " has been generated at " + room.position + " with a rotation of " + room.rotation.ToString());
+        //Debug.Log(room.name + " has been generated at " + room.position + " with a rotation of " + room.rotation.ToString());
         for (int count = 0; room.Connectors.Count > count; count++)
         {
-            if (!room.Connectors[count].processed)
-                Debug.Log("A Room Should be Generated at " + (room.GetConnectorMapExitPosition(count)));
+            //if (!room.Connectors[count].processed)
+                //Debug.Log("A Room Should be Generated at " + (room.GetConnectorMapExitPosition(count)));
         }
     }
 

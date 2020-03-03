@@ -91,6 +91,14 @@ public class Client_Demo : MonoBehaviour
         {
             Sendgun();
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            PlayerManager me = playersList[0];
+            me.position = new Vector3(10, 10, 0);
+        }
+
+
     }
     private void Sendgun()
     {
@@ -217,7 +225,7 @@ public class Client_Demo : MonoBehaviour
             }
         }
 
-        Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
+        //Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
     }
 
 
