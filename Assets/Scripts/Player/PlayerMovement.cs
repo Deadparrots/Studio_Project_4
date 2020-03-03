@@ -107,8 +107,8 @@ public class PlayerMovement : MonoBehaviour
                 if (manager)
                     manager.isMoving = true;            
             }
-            else
-                manager.isMoving = false;
+            else if (manager)
+                    manager.isMoving = false;
 
 
             //if (Input.GetKey("up"))
