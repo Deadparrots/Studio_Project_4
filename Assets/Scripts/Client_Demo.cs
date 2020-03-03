@@ -87,10 +87,10 @@ public class Client_Demo : MonoBehaviour
             SendMovement();
             delta = 0;
         }
-        if (Input.GetKeyDown(InputManager.Weapon1))
-        {
-            Sendgun();
-        }
+        //if (Input.GetKeyDown(InputManager.Weapon1))
+        //{
+        //    Sendgun();
+        //}
 
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -100,7 +100,7 @@ public class Client_Demo : MonoBehaviour
 
 
     }
-    private void Sendgun()
+    public void Sendgun()
     {
         if (m_NetworkWriter.StartWritting())
         {

@@ -75,6 +75,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (isPlayer)
         {
+
+            if (InputManager.inputManager != null)
+                if (InputManager.inputManager.Menu.activeSelf)
+                    return;
+
             velocity.Set(0, 0, 0);
             if (Input.GetKey(InputManager.MoveUp))
             {
@@ -110,6 +115,10 @@ public class PlayerMovement : MonoBehaviour
             else if (manager)
                     manager.isMoving = false;
 
+            if (Input.GetKeyDown(InputManager.Weapon1))
+            {
+                Client_Demo.Instance.Sendgun();
+            }
 
             //if (Input.GetKey("up"))
             //{
