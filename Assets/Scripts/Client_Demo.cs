@@ -108,6 +108,7 @@ public class Client_Demo : MonoBehaviour
             if (me == null)
                 return;
             // TODO: use playerManager's childObject 
+            me.isShooting = true;
             Vector3 bulletPos = new Vector3(0, 0, 0);
             foreach (Transform child in me.gameObject.transform)
             {
@@ -119,6 +120,7 @@ public class Client_Demo : MonoBehaviour
                     m_NetworkWriter.Write(bulletPos.y);
                     m_NetworkWriter.Write(bulletPos.z);
                     m_NetworkWriter.Write(child.gameObject.transform.forward);
+                    m_NetworkWriter.Write(me.isShooting);
                     m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
                 }
             }

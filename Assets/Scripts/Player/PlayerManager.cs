@@ -10,6 +10,9 @@ public class PlayerManager : MonoBehaviour
     public TextMesh scoreText;
     private PlayerMovement childScript;
     private float health;
+    public bool isShooting = false;
+    public bool isMoving = false;
+    public Animator animator;
     public uint pid
     {
         get { return id; }
@@ -90,9 +93,24 @@ public class PlayerManager : MonoBehaviour
     protected void Awake()
     {
         childScript = GetComponentInChildren<PlayerMovement>();
+        animator = GetComponentInChildren<Animator>();
         health = 100.0f;
+    }
+
+    private void FixedUpdate()
+    {
+
+
+        //if(isShooting)
+        //    animator.SetBool("isShooting", true);
+        //else
+        //    animator.SetBool("isShooting", false);
     }
     private void Update()
     {
+        if (isMoving)
+            animator.SetBool("isMoving", true);
+        else
+            animator.SetBool("isMoving", false);
     }
 }
