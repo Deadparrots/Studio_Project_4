@@ -87,7 +87,7 @@ public class Client_Demo : MonoBehaviour
             SendMovement();
             delta = 0;
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(InputManager.Weapon1))
         {
             Sendgun();
         }
