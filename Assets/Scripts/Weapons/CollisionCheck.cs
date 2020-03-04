@@ -40,15 +40,14 @@ public class CollisionCheck : MonoBehaviour
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
-            else if (collision.gameObject.name == "MeleeEnemyAI")
-            {
-                PlayerManager player = gameObject.GetComponent<PlayerManager>();
+            else if (collision.gameObject.name == "MeleeEnemyAI(Clone)")
+            { 
                 // Deal dmg to enemy
                 EnemyAI enemy = collision.gameObject.GetComponent<EnemyAI>();
                 Server_Demo.Instance.DmgEnemy(enemy.pid, 25.0f);
                 if(enemy.hp <= 0)
                 {
-                    Server_Demo.Instance.AddScore(player.pid, 100.0f);
+                    Server_Demo.Instance.AddScore(bulletManager.ownerID, 100.0f);
                 }
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
@@ -59,12 +58,12 @@ public class CollisionCheck : MonoBehaviour
             }
         }
 
-        if(collision.gameObject.tag.Equals("PickUp"))
+        if(collision.gameObject.tag == "PickUp")
         {
-            PickupManager pickup = gameObject.GetComponent<PickupManager>();
-            if (gameObject.name == "Player(Clone)")
+            PickupManager pickup = collision.gameObject.GetComponent<PickupManager>();
+            if (gameObject.name == "Body")
             {
-                PlayerManager player = gameObject.GetComponent<PlayerManager>();
+                PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
                 Server_Demo.Instance.AddMoney(player.pid, 25.0f);
                 // TODO: Destroy Pickups
                 Server_Demo.Instance.DestroyHealthPickUp(player.pid, pickup.pid);
