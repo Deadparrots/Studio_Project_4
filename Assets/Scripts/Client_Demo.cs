@@ -91,12 +91,7 @@ public class Client_Demo : MonoBehaviour
             PlayerManager me = playersList[0];
             me.position = new Vector3(10, 10, 0);
         }
-
-<<<<<<< HEAD
-        PlayerManager player = playersList[0].gameObject.GetComponent<PlayerManager>();
-=======
-        PlayerManager player = playersList[0].GetComponent<PlayerManager>();
->>>>>>> 1003ba9026d56c26d367a45063598d084ca41d8a
+        PlayerManager player = playersList[0];
         if(player.previve == true && player.hp <= 0)
         {
             player.previve = false;

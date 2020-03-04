@@ -49,7 +49,6 @@ public class Room : MonoBehaviour
 
                     }
                     break;
-                    break;
                 case Rotation.Left:
                     ret.Add(new Vector2Int((Connectors[i].y > 0 ? -Connectors[i].y : Connectors[i].y), (Connectors[i].x > 0 ? Connectors[i].x : -Connectors[i].x)));
                     break;
@@ -93,7 +92,6 @@ public class Room : MonoBehaviour
                         //if (y == )
 
                     }
-                    break;
                 }
             case Rotation.Left:
                 {
@@ -124,7 +122,6 @@ public class Room : MonoBehaviour
 
                     }
                 }
-                break;
             case Rotation.Right:
                 {
                     if (SizeX == 1 && SizeY == 1)
@@ -159,7 +156,6 @@ public class Room : MonoBehaviour
 
                     }
                 }
-                break;
         }
         return new Vector2Int(0,0);
     }
