@@ -433,8 +433,21 @@ public class Server_Demo : MonoBehaviour
     {
         sceneMgr.ToGame();
 
+        GameObject[] spawnPoints;
+        spawnPoints = GameObject.FindGameObjectsWithTag("Spawnpoint");
+
+        foreach (GameObject spawn in spawnPoints)
+        {
+            SpawnPoint spawnpoint = new SpawnPoint();
+            spawnpoint.active = true;
+            spawnpoint.position = spawn.transform.position;
+            Debug.Log("Spawnpoint position: " + spawnpoint.position);
+            spawnPointList.Add(spawnpoint);
+        }
+
         GameObject[] waypointPathGOs;
         waypointPathGOs = GameObject.FindGameObjectsWithTag("WaypointPath");
+
 
         foreach (GameObject waypointPath in waypointPathGOs)
         {
@@ -460,17 +473,7 @@ public class Server_Demo : MonoBehaviour
             ++enemyID;
         }
 
-        GameObject[] spawnPoints;
-        spawnPoints = GameObject.FindGameObjectsWithTag("Spawnpoint");
 
-        foreach (GameObject spawn in spawnPoints)
-        {
-            SpawnPoint spawnpoint = new SpawnPoint();
-            spawnpoint.active = true;
-            spawnpoint.position = spawn.transform.position;
-            Debug.Log("Spawnpoint position: " + spawnpoint.position);
-            spawnPointList.Add(spawnpoint);
-        }
 
         gameStarted = true;
     }
@@ -490,6 +493,7 @@ public class Server_Demo : MonoBehaviour
             int spawnPoint = Random.Range(0, spawnPointList.Count - 1);
             Vector3 spawnPointPos = spawnPointList[spawnPoint].position;
             Vector3 spawnPointRot = spawnPointList[spawnPoint].rotation;
+            Debug.Log("Spawning at spawnpoint " + spawnPoint + " : " + spawnPointPos);
             client.m_x = spawnPointPos.x;
             client.m_y = spawnPointPos.y;
             client.m_z = spawnPointPos.z;

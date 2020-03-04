@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public float verticalInputAcceleration = 1;
     public float horizontalInputAcceleration = 20;
     public float movementSpeed = 0.0f;
-
+    PlayerManager manager;
     public float maxSpeed = 10;
     public float maxRotationSpeed = 100;
 
@@ -104,7 +104,11 @@ public class PlayerMovement : MonoBehaviour
             if (velocity.magnitude > 0) // Forces the player's velocity to be actually the movement speed
             {
                 velocity = velocity * (movementSpeed / velocity.magnitude);
+                if (manager)
+                    manager.isMoving = true;            
             }
+            else if (manager)
+                    manager.isMoving = false;
 
 
             //if (Input.GetKey("up"))
@@ -179,5 +183,6 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {
         defaultScale = gameObject.transform.lossyScale; //either lossyScale or local Scale?
+        manager = GetComponentInParent<PlayerManager>();
     }
 }
