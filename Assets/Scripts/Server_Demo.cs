@@ -554,10 +554,13 @@ public class Server_Demo : MonoBehaviour
             client.rotation_y = spawnPointRot.y;
             client.rotation_z = spawnPointRot.z;
 
+            client.hp = 100;
+
             clients[guid] = client;
 
             m_NetworkWriter.Write(spawnPointPos);
             m_NetworkWriter.Write(spawnPointRot);
+            m_NetworkWriter.Write(client.hp);
             int playersInGameplayScene = 0;
 
             // TODO: Set clients position and rotation according to a random spawn point
@@ -583,7 +586,7 @@ public class Server_Demo : MonoBehaviour
                     m_NetworkWriter.Write(playerObj.rotation_x);
                     m_NetworkWriter.Write(playerObj.rotation_y);
                     m_NetworkWriter.Write(playerObj.rotation_z);
-                    //m_NetworkWriter.Write(playerObj.hp);  // TODO
+                    m_NetworkWriter.Write(playerObj.hp);  // TODO
 
                 }
             }
@@ -596,6 +599,7 @@ public class Server_Demo : MonoBehaviour
                 m_NetworkWriter.Write(enemy.pid);
                 m_NetworkWriter.Write(enemy.position);
                 m_NetworkWriter.Write(enemy.rotation);
+                m_NetworkWriter.Write(enemy.hp);
             }
 
             m_NetworkWriter.Write(bulletList.Count);
@@ -658,6 +662,7 @@ public class Server_Demo : MonoBehaviour
                     Vector3 rotation = new Vector3(client.rotation_x, client.rotation_y, client.rotation_z);
                     m_NetworkWriter.Write(position);
                     m_NetworkWriter.Write(rotation);
+                    m_NetworkWriter.Write(client.hp);
                     peer.SendData(GetGUID(playerObj), Peer.Reliability.Reliable, 0, m_NetworkWriter);
                 }
             }
@@ -940,6 +945,15 @@ public class Server_Demo : MonoBehaviour
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYHEALTHPICKUP);
             m_NetworkWriter.Write(playerID);
             m_NetworkWriter.Write(pickupID);
+
+            foreach(pickupObject pickup in pickupList)
+            {
+                if (pickup.id == pickupID)
+                {
+                    pickupList.Remove(pickup);
+                }
+            }
+
             foreach (ulong guids in clients.Keys)
             {
                 peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);

@@ -22,12 +22,12 @@ public class CollisionCheck : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("EnemyWeapon"))
         {
-            if (gameObject.name == "Player(Clone)")
+            if (gameObject.name == "Body")
             {
-                PlayerManager player = gameObject.GetComponent<PlayerManager>();
+                PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
                 // Call server to deal weapon dmg to player
                 // TODO: CHANGE THE DMG TO REFERENCE FROM WEAPONS DMG STAT
-                Server_Demo.Instance.DmgPlayer(player.pid, 25.0f);
+                Server_Demo.Instance.DmgPlayer(player.pid, 10.0f);
             }
         }
 
@@ -42,13 +42,12 @@ public class CollisionCheck : MonoBehaviour
             }
             else if (collision.gameObject.name == "MeleeEnemyAI(Clone)")
             {
-                PlayerManager player = gameObject.GetComponent<PlayerManager>();
                 // Deal dmg to enemy
                 EnemyAI enemy = collision.gameObject.GetComponent<EnemyAI>();
                 Server_Demo.Instance.DmgEnemy(enemy.pid, 25.0f);
                 if(enemy.hp <= 0)
                 {
-                    Server_Demo.Instance.AddScore(player.pid, 100.0f);
+                    Server_Demo.Instance.AddScore(bulletManager.ownerID, 100.0f);
                 }
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
@@ -59,12 +58,12 @@ public class CollisionCheck : MonoBehaviour
             }
         }
 
-        if(collision.gameObject.tag.Equals("PickUp"))
+        if(collision.gameObject.tag == "PickUp")
         {
-            PickupManager pickup = gameObject.GetComponent<PickupManager>();
-            if (gameObject.name == "Player(Clone)")
+            PickupManager pickup = collision.gameObject.GetComponent<PickupManager>();
+            if (gameObject.name == "Body")
             {
-                PlayerManager player = gameObject.GetComponent<PlayerManager>();
+                PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
                 Server_Demo.Instance.AddMoney(player.pid, 25.0f);
                 // TODO: Destroy Pickups
                 Server_Demo.Instance.DestroyHealthPickUp(player.pid, pickup.pid);

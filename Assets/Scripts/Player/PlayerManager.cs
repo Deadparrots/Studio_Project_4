@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerManager : MonoBehaviour
     public bool isShooting = false;
     public bool isMoving = false;
     public Animator animator;
+    public Image healthBar;
     public uint pid
     {
         get { return id; }
@@ -132,5 +134,7 @@ public class PlayerManager : MonoBehaviour
             animator.SetBool("isMoving", true);
         else
             animator.SetBool("isMoving", false);
+
+        healthBar.fillAmount = hp * 0.01f;
     }
 }
