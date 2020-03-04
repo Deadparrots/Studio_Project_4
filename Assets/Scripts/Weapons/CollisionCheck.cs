@@ -22,12 +22,18 @@ public class CollisionCheck : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("EnemyWeapon"))
         {
-            if (gameObject.name == "Body")
+
+            EnemyAI enemy = collision.gameObject.GetComponentInParent<EnemyAI>();
+
+            if (enemy.hp > 0)
             {
-                PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
-                // Call server to deal weapon dmg to player
-                // TODO: CHANGE THE DMG TO REFERENCE FROM WEAPONS DMG STAT
-                Server_Demo.Instance.DmgPlayer(player.pid, 10.0f);
+                if (gameObject.name == "Body")
+                {
+                    PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
+                    // Call server to deal weapon dmg to player
+                    // TODO: CHANGE THE DMG TO REFERENCE FROM WEAPONS DMG STAT
+                    Server_Demo.Instance.DmgPlayer(player.pid, 10.0f);
+                }
             }
         }
 
@@ -55,9 +61,11 @@ public class CollisionCheck : MonoBehaviour
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
-            else if(collision.gameObject.name == "breakable")
+            else if(collision.gameObject.name == "breakable(Clone)")
             {
                 // TODO: Destroy breakable
+                Destroy(collision.gameObject);
+                Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
         }
 
