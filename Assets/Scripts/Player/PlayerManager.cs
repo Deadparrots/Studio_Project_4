@@ -136,13 +136,9 @@ public class PlayerManager : MonoBehaviour
         else
             animator.SetBool("isMoving", false);
 
-<<<<<<< HEAD
         if (healthBar != null)
             healthBar.fillAmount = hp * 0.01f;
-=======
-        healthBar.fillAmount = hp * 0.01f;
         ScoreText.text = pscore.ToString();
         MoneyText.text = pmoney.ToString();
->>>>>>> d86c6ee004409477570314b787ec03e3bea6743e
     }
 }
