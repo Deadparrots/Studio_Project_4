@@ -24,6 +24,9 @@ public class playerObject
     public bool inConnectionScene;
     public bool inGameplayScene;
     public float hp;
+    public int score;
+    public int money;
+    public bool revive;
     public playerObject(uint _id)
     {
         this.playerNum = 1;
@@ -35,6 +38,9 @@ public class playerObject
         velocity_X = velocity_Y = velocity_Z = 0.0f;
         rotation_x = rotation_y = rotation_z = 0.0f;
         hp = 100;
+        score = 0;
+        money = 100;
+        revive = false;
     }
 }
 
@@ -769,6 +775,68 @@ public class Server_Demo : MonoBehaviour
            {
                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
            }
+        }
+    }
+
+    public void AddScore(uint playerID, float score)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_ADDSCORE);
+            m_NetworkWriter.Write(playerID);
+            m_NetworkWriter.Write(score);
+
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
+    }
+
+    public void AddMoney(uint playerID, float money)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_ADDMONEY);
+            m_NetworkWriter.Write(playerID);
+            m_NetworkWriter.Write(money);
+
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
+    }
+    public void ReduceMoney(uint playerID, float money)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_REDUCEMONEY);
+            m_NetworkWriter.Write(playerID);
+            m_NetworkWriter.Write(money);
+
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
+        }
+    }
+    public void Revive(uint playerID, bool revive)
+    {
+        if (m_NetworkWriter.StartWritting())
+        {
+            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_BOUGHTREVIVE);
+            m_NetworkWriter.Write(playerID);
+            m_NetworkWriter.Write(revive);
+
+
+            foreach (ulong guids in clients.Keys)
+            {
+                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
+            }
         }
     }
 
