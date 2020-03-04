@@ -19,7 +19,6 @@ public class PlayerManager : MonoBehaviour
     public Image healthBar;
     public Text ScoreText;
     public Text MoneyText;
-    public Image revival;
     public uint pid
     {
         get { return id; }
@@ -132,24 +131,23 @@ public class PlayerManager : MonoBehaviour
     }
     private void Update()
     {
-        if (isMoving)
-            animator.SetBool("isMoving", true);
-        else
-            animator.SetBool("isMoving", false);
+        if(animator)
+        {
+            if (isMoving)
+                animator.SetBool("isMoving", true);
+            else
+                animator.SetBool("isMoving", false);
+        }
+
 
         if (healthBar != null)
             healthBar.fillAmount = hp * 0.01f;
-        ScoreText.text = pscore.ToString();
-        MoneyText.text = pmoney.ToString();
-        if(previve == true)
+        if(ScoreText)
         {
-            if(revival)
-               revival.fillAmount = 1;
+            ScoreText.text = pscore.ToString();
         }
-        else
-        {
-            if (revival)
-                revival.fillAmount = 0;
-        }
+
+        if(MoneyText)
+            MoneyText.text = pmoney.ToString();
     }
 }

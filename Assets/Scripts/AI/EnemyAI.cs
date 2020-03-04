@@ -37,9 +37,6 @@ public class EnemyAI : MonoBehaviour
         Debug.Log("Enemy starting position: " + gameObject.transform.position);
         isController = false;
         //rotation.y -= 180;
-    }
-    void Start()
-    {
 
         sm = new StateMachine<EnemyAI>(this);
         sm.AddState(new PatrolState(this, "Patrol"));
@@ -51,6 +48,9 @@ public class EnemyAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = true;
         agent.updatePosition = true;
+    }
+    void Start()
+    {
     }
 
     public uint pid
