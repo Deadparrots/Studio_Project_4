@@ -54,12 +54,6 @@ public class Client_Demo : MonoBehaviour
         userName = _name;
         Connect(_ip, _port);
         sceneMgr.ToMainmenu();
-        //GetComponent<GameData>().inventory1 = 1;
-        //GetComponent<GameData>().inventory2 = 0;
-        //GetComponent<GameData>().inventorychoice = 1;
-        //GetComponent<GameData>().hp = 10;
-        //GetComponent<GameData>().money = 100;
-        //GetComponent<GameData>().revival = false;
     }
 
     public bool IsRunning
@@ -96,6 +90,13 @@ public class Client_Demo : MonoBehaviour
         {
             PlayerManager me = playersList[0];
             me.position = new Vector3(10, 10, 0);
+        }
+
+        PlayerManager player = gameObject.GetComponent<PlayerManager>();
+        if(player.previve == true && player.hp <= 0)
+        {
+            player.previve = false;
+            player.hp = 100.0f;
         }
 
 
@@ -487,9 +488,44 @@ public class Client_Demo : MonoBehaviour
                             if (player.pid == playerID)
                             {
                                 Debug.Log(money + "money added to player " + playerID);
-                                player.Pmoney -= money;
+                                player.Pmoney += money;
                                 Uimanager UI = gameObject.GetComponent<Uimanager>();
                                 UI.Moneyup(25.0f);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_REDUCEMONEY:
+                    {
+                        uint playerID = m_NetworkReader.ReadUInt32();
+                        float money = m_NetworkReader.ReadFloat();
+                        foreach (PlayerManager player in playersList)
+                        {
+                            if (player.pid == playerID)
+                            {
+                                Debug.Log(money + "money taken from player " + playerID);
+                                player.Pmoney -= money;
+                                Uimanager UI = gameObject.GetComponent<Uimanager>();
+                                UI.Moneydown(1000.0f);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_BOUGHTREVIVE:
+                    {
+                        uint playerID = m_NetworkReader.ReadUInt32();
+                        bool revive = m_NetworkReader.ReadBoolean();
+                        foreach (PlayerManager player in playersList)
+                        {
+                            if (player.pid == playerID)
+                            {
+                                player.previve = true;
+                                Uimanager UI = gameObject.GetComponent<Uimanager>();
+                                UI.Moneydown(1000.0f);
                                 break;
                             }
                         }

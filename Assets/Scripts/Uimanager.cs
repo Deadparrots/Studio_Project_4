@@ -11,6 +11,7 @@ public class Uimanager : MonoBehaviour
     private float score = 0.0f;
     private float money = 100.0f;
     private float hp = 100.0f;
+    
     // Use this for initialization
     void Start()
     {
