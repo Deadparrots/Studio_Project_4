@@ -4,7 +4,7 @@ using DG.Tweening;
 
 public class Shop : MonoBehaviour
 {
-    public Transform Shopin, Shopout, RevivalItem, Shopbg;
+    public Transform Shopin, Shopout, Shopbg;
     // Use this for initialization
     void Start()
     {
@@ -27,12 +27,12 @@ public class Shop : MonoBehaviour
         Shopbg.DOMoveX(-1280, 1);
     }
 
-    public void Revivalitem()
-    {
-        PlayerManager player = gameObject.GetComponent<PlayerManager>();
-        if (player.previve == false && player.pmoney >= 1000)
-        {
-            Server_Demo.Instance.Revive(player.pid, true);
-        }
-    }
+    //public void Revivalitem()
+    //{
+    //    PlayerManager player = gameObject.GetComponent<PlayerManager>();
+    //    if (player.previve == false && player.pmoney >= 1000)
+    //    {
+    //        Server_Demo.Instance.Revive(player.pid, true);
+    //    }
+    //}
 }

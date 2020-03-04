@@ -19,6 +19,7 @@ public class PlayerManager : MonoBehaviour
     public Image healthBar;
     public Text ScoreText;
     public Text MoneyText;
+    public Image revival;
     public uint pid
     {
         get { return id; }
@@ -140,5 +141,13 @@ public class PlayerManager : MonoBehaviour
             healthBar.fillAmount = hp * 0.01f;
         ScoreText.text = pscore.ToString();
         MoneyText.text = pmoney.ToString();
+        if(previve == true)
+        {
+            revival.fillAmount = 1;
+        }
+        else
+        {
+            revival.fillAmount = 0;
+        }
     }
 }

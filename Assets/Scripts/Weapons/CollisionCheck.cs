@@ -54,6 +54,12 @@ public class CollisionCheck : MonoBehaviour
                 // Deal dmg to enemy
                 EnemyAI enemy = collision.gameObject.GetComponent<EnemyAI>();
                 Server_Demo.Instance.DmgEnemy(enemy.pid, 25.0f);
+
+                DamagePopUp popUp = Instantiate(Client_Demo.Instance.popUpReference).GetComponent<DamagePopUp>();
+                popUp.text = "25";
+                popUp.position = gameObject.transform.position;
+                popUp.color = Color.red;
+
                 if(enemy.hp <= 0)
                 {
                     Server_Demo.Instance.AddScore(bulletManager.ownerID, 100.0f);
@@ -89,6 +95,8 @@ public class CollisionCheck : MonoBehaviour
                 GameObject border = collision.gameObject.transform.Find("border").gameObject;
                 if (!temp.isPlaying && (int)border.transform.position.y == 0 )
                     temp.Play("ExitAnimEnter");
+                Globals.countDown = 0;
+                Globals.countDownlastsecond = 0;
             }
             
         }
@@ -107,6 +115,26 @@ public class CollisionCheck : MonoBehaviour
                     temp.Play("ExitAnimLeave");
             }
 
+            if (collision.gameObject.name == "Exit") // since inside shld only run once per frame
+            {
+                Globals.countDown += Time.deltaTime;
+                
+                if (Globals.countDown - 1 > Globals.countDownlastsecond)
+                {
+
+                    DamagePopUp popUp = Instantiate(Client_Demo.Instance.popUpReference).GetComponent<DamagePopUp>();
+                    popUp.text = ((int)(Globals.ExitTimer - Globals.countDown)).ToString();
+                    popUp.position = gameObject.transform.position;
+                    popUp.color = Color.red;
+                    popUp.lifetime = 1f;
+                    Globals.countDownlastsecond = Globals.countDown;
+                }
+
+                if (Globals.countDown > Globals.ExitTimer)
+                {
+                    Client_Demo.Instance.GetSceneManager().ToEndScreen();
+                }
+            }
         }
     }
 
