@@ -24,8 +24,8 @@ public class playerObject
     public bool inConnectionScene;
     public bool inGameplayScene;
     public float hp;
-    public int score;
-    public int money;
+    public float score;
+    public float money;
     public bool revive;
     public playerObject(uint _id)
     {

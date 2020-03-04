@@ -663,8 +663,8 @@ public class Client_Demo : MonoBehaviour
                         me.position = m_NetworkReader.ReadVector3();
                         me.pRotation = m_NetworkReader.ReadVector3();
                         me.hp = m_NetworkReader.ReadFloat();
-                        me.pmoney = m_NetworkReader.ReadFloat();
                         me.pscore = m_NetworkReader.ReadFloat();
+                        me.pmoney = m_NetworkReader.ReadFloat();
 
                         me.healthBar = GameObject.Find("hp").GetComponent<Image>();
                         me.ScoreText = GameObject.Find("scoretext").GetComponent<Text>();
