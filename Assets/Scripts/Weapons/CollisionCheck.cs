@@ -40,7 +40,7 @@ public class CollisionCheck : MonoBehaviour
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
-            else if (collision.gameObject.name == "MeleeEnemyAI(Clone)")
+            else if (collision.gameObject.name == "MeleeEnemyAI")
             {
                 PlayerManager player = gameObject.GetComponent<PlayerManager>();
                 // Deal dmg to enemy

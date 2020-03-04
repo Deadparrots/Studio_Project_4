@@ -83,26 +83,26 @@ public class PlayerMovement : MonoBehaviour
             velocity.Set(0, 0, 0);
             if (Input.GetKey(InputManager.MoveUp))
             {
-                print("w key is held down");
+                //print("w key is held down");
                 velocity.z = movementSpeed;
             }
 
             else if (Input.GetKey(InputManager.MoveDown))
             {
-                print("s key is held down");
+                //print("s key is held down");
                 velocity.z = -movementSpeed;
 
             }
 
             if (Input.GetKey(InputManager.MoveLeft))
             {
-                print("a key is held down");
+                //print("a key is held down");
                 velocity.x = -movementSpeed;
             }
 
             else if (Input.GetKey(InputManager.MoveRight))
             {
-                print("d key is held down");
+                //print("d key is held down");
                 velocity.x = movementSpeed;
             }
 
