@@ -61,9 +61,11 @@ public class CollisionCheck : MonoBehaviour
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
-            else if(collision.gameObject.name == "breakable")
+            else if(collision.gameObject.name == "breakable(Clone)")
             {
                 // TODO: Destroy breakable
+                Destroy(collision.gameObject);
+                Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
         }
 

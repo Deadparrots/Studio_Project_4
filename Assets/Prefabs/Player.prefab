@@ -53,6 +53,12 @@ MonoBehaviour:
   isShooting: 0
   isMoving: 0
   animator: {fileID: 0}
+  healthBar: {fileID: 8816388361018554511, guid: 848ceb082e291b24eae3f1b7ebd36e75,
+    type: 3}
+  ScoreText: {fileID: 4599509361540565425, guid: ab1dca5d38000d747ae1d7e8ed4d6976,
+    type: 3}
+  MoneyText: {fileID: 481149344036070892, guid: c0db0c4dd8c5c60428a1e7be51e47169,
+    type: 3}
 --- !u!114 &6668402913644665805
 MonoBehaviour:
   m_ObjectHideFlags: 0
