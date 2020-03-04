@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 public class Client_Demo : MonoBehaviour
 {
     public ClientNetInfo m_ClientNetInfo = new ClientNetInfo();
@@ -105,13 +106,12 @@ public class Client_Demo : MonoBehaviour
             {
                 if (child.name == "Body")
                 {
-                    bulletPos = child.gameObject.transform.position + (child.gameObject.transform.forward.normalized);
+                    bulletPos = child.gameObject.transform.position + (child.gameObject.transform.forward.normalized) + new Vector3(0,1,0);
                     m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SHOOTBULLET);
                     m_NetworkWriter.Write(bulletPos.x);
                     m_NetworkWriter.Write(bulletPos.y);
                     m_NetworkWriter.Write(bulletPos.z);
                     m_NetworkWriter.Write(child.gameObject.transform.forward);
-                    m_NetworkWriter.Write(me.isShooting);
                     m_NetworkWriter.Send(serveruid, Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
                 }
             }
@@ -560,6 +560,19 @@ public class Client_Demo : MonoBehaviour
                     }
                     break;
 
+                case (byte)Packets_ID.ID_SPAWNENEMY:
+                    {
+                        GameObject enemy = Instantiate(enemyReference);
+                        EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+                        enemyManager.pid = m_NetworkReader.ReadUInt32();
+                        Debug.Log("ID: " + enemyManager.pid);
+                        enemyManager.position = m_NetworkReader.ReadVector3();
+                        enemyManager.GetComponent<NavMeshAgent>().Warp(enemyManager.position);
+                        enemyManager.rotation = m_NetworkReader.ReadVector3();
+                        enemyList.Add(enemyManager);
+                    }
+                    break;
+
                 case (byte)Packets_ID.ID_SPAWNPICKUP:
                     {
                         uint pickupID = m_NetworkReader.ReadUInt32();
@@ -672,6 +685,9 @@ public class Client_Demo : MonoBehaviour
                         PlayerManager me = playersList[0];
                         me.position = m_NetworkReader.ReadVector3();
                         me.pRotation = m_NetworkReader.ReadVector3();
+                        me.hp = m_NetworkReader.ReadFloat();
+
+                        me.healthBar = GameObject.Find("hp").GetComponent<Image>();
 
                         int playerCount = m_NetworkReader.ReadInt32();
 
@@ -680,16 +696,69 @@ public class Client_Demo : MonoBehaviour
                             uint pid = m_NetworkReader.ReadUInt32();
                             Vector3 position = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
                             Vector3 rotation = new Vector3(m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat(), m_NetworkReader.ReadFloat());
-
-                            foreach(PlayerManager player in playersList)
+                            float hp = m_NetworkReader.ReadFloat();
+                            foreach (PlayerManager player in playersList)
                             {
                                 if(player.pid == pid)
                                 {
                                     player.position = position;
                                     player.pRotation = rotation;
                                     // TODO: Set health
+                                    player.hp = hp;
                                     break;
                                 }
+                            }
+                        }
+
+                        int enemyCount = m_NetworkReader.ReadInt32();
+
+                        for (int i = 0; i < enemyCount; ++i)
+                        {
+                            GameObject enemy = Instantiate(enemyReference);
+                            EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+                            enemyManager.pid = m_NetworkReader.ReadUInt32();
+                            Debug.Log("ID: " + enemyManager.pid);
+                            enemyManager.position = m_NetworkReader.ReadVector3();
+                            enemyManager.GetComponent<NavMeshAgent>().Warp(enemyManager.position);
+                            enemyManager.rotation = m_NetworkReader.ReadVector3();
+                            enemyManager.hp = m_NetworkReader.ReadFloat();
+                            enemyList.Add(enemyManager);
+                        }
+
+                        int bulletCount = m_NetworkReader.ReadInt32();
+
+                        for (int i = 0; i < bulletCount; ++i)
+                        {
+                            uint bid = m_NetworkReader.ReadUInt32();    // bulletid
+                            uint boid = m_NetworkReader.ReadUInt32();   // ownerid
+                            Vector3 bulletPos = m_NetworkReader.ReadVector3();
+                            GameObject bullet = Instantiate(bulletReference);
+                            Rigidbody bulletRigidbody = bullet.GetComponent<Rigidbody>();
+                            bulletRigidbody.position = bulletPos;
+                            BulletManager bulletManager = bullet.GetComponent<BulletManager>();
+                            Vector3 forward = m_NetworkReader.ReadVector3();
+                            bulletRigidbody.AddForce(forward * 500);
+                            bulletManager.pid = bid;
+                            bulletManager.ownerID = boid;
+                            bulletList.Add(bulletManager);
+                        }
+
+                        int pickupCount = m_NetworkReader.ReadInt32();
+
+                        for (int i = 0; i < pickupCount; ++i)
+                        {
+                            uint pickupID = m_NetworkReader.ReadUInt32();
+                            int type = m_NetworkReader.ReadInt32();
+                            Vector3 position = m_NetworkReader.ReadVector3();
+
+
+                            if (type == 0)
+                            {
+                                GameObject pickupObject = Instantiate(healthPickupReference);
+                                PickupManager pickupManager = pickupObject.GetComponent<PickupManager>();
+                                pickupManager.pPosition = position;
+                                pickupManager.pid = pickupID;
+                                pickupList.Add(pickupManager);
                             }
                         }
                     }
@@ -701,13 +770,14 @@ public class Client_Demo : MonoBehaviour
                         uint pid = m_NetworkReader.ReadUInt32();
                         Vector3 position = m_NetworkReader.ReadVector3();
                         Vector3 rotation = m_NetworkReader.ReadVector3();
-
-                        foreach(PlayerManager player in playersList)
+                        float hp = m_NetworkReader.ReadFloat();
+                        foreach (PlayerManager player in playersList)
                         {
                             if(player.pid == pid)
                             {
                                 player.position = position;
                                 player.pRotation = rotation;
+                                player.hp = hp;
                                 break;
                             }
                         }

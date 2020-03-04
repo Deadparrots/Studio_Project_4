@@ -99,21 +99,26 @@ public class Server_Demo : MonoBehaviour
     private Dictionary<ulong, playerObject> clients = new Dictionary<ulong, playerObject>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<bulletObject> bulletList = new List<bulletObject>();
+    private List<pickupObject> pickupList = new List<pickupObject>();
     private uint playerID;
     private uint enemyID;
     private uint pickupID;
     private uint bulletID;
     public List<WaypointPath> waypointPathsList = new List<WaypointPath>();
     public List<SpawnPoint> spawnPointList = new List<SpawnPoint>();
+    public List<SpawnPoint> enemySpawnPointList = new List<SpawnPoint>();
     const int MAX_PLAYERS = 4;
     int totalWaypoints = 0;
     bool gameStarted = false;
     private SceneManagement sceneMgr;
+    private AISpawner enemySpawner;
+    [SerializeField] private GameObject enemyReference;
     private void Awake()
     {
         Instance = this;
         sceneMgr = gameObject.GetComponent<SceneManagement>();
         Debug.Log("Server got scene manager");
+        enemySpawner = GetComponent<AISpawner>();
     }
 
     public void Init(int _port)
@@ -447,6 +452,18 @@ public class Server_Demo : MonoBehaviour
             spawnPointList.Add(spawnpoint);
         }
 
+        GameObject[] enemySpawnPoints;
+        enemySpawnPoints = GameObject.FindGameObjectsWithTag("EnemySpawnPoint");
+
+        foreach (GameObject spawn in enemySpawnPoints)
+        {
+            SpawnPoint spawnpoint = new SpawnPoint();
+            spawnpoint.active = true;
+            spawnpoint.position = spawn.transform.position;
+            Debug.Log("EnemySpawnpoint position: " + spawnpoint.position);
+            enemySpawnPointList.Add(spawnpoint);
+        }
+
         GameObject[] waypointPathGOs;
         waypointPathGOs = GameObject.FindGameObjectsWithTag("WaypointPath");
 
@@ -464,7 +481,7 @@ public class Server_Demo : MonoBehaviour
             waypointPathsList.Add(temp);
         }
 
-
+        Debug.Log("Num of waypoint paths: " + waypointPathsList.Count);
 
         foreach (EnemyAI enemy in GameObject.FindObjectsOfType(typeof(EnemyAI)))
         {
@@ -477,10 +494,40 @@ public class Server_Demo : MonoBehaviour
             enemyList.Add(enemy);
 
         }
-
-
-
         gameStarted = true;
+        enemySpawner.inGame = gameStarted;
+    }
+
+    public void SpawnEnemy()
+    {
+        GameObject enemy = Instantiate(enemyReference);
+        EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+        enemyManager.pid = enemyID;
+        enemyManager.controller = true;
+        enemyManager.position = enemySpawnPointList[Random.Range(0, enemySpawnPointList.Count - 1)].position;
+        enemyManager.GetComponent<NavMeshAgent>().Warp(enemyManager.position);
+        // might need an offset on enemy position
+        enemyManager.rotation = new Vector3(0, 0, 0);
+        enemyManager.WayPoints = waypointPathsList[Random.Range(0,waypointPathsList.Count - 1)].wayPoints;
+        enemyManager.WaypointIndex = 0;
+        //enemy.GetComponent<NavMeshAgent>().Warp(enemy.position);
+        ++enemyID;
+        enemyList.Add(enemyManager);
+
+        if (m_NetworkWriter.StartWritting())
+        {
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inGameplayScene == true)
+                {
+                    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SPAWNENEMY);
+                    m_NetworkWriter.Write(enemyManager.pid);
+                    m_NetworkWriter.Write(enemyManager.position);
+                    m_NetworkWriter.Write(enemyManager.rotation);
+                    peer.SendData(GetGUID(playerObj), Peer.Reliability.Reliable, 0, m_NetworkWriter);
+                }
+            }
+        }
     }
 
     private void SendGameplaySceneInfo(ulong guid)
@@ -507,10 +554,13 @@ public class Server_Demo : MonoBehaviour
             client.rotation_y = spawnPointRot.y;
             client.rotation_z = spawnPointRot.z;
 
+            client.hp = 100;
+
             clients[guid] = client;
 
             m_NetworkWriter.Write(spawnPointPos);
             m_NetworkWriter.Write(spawnPointRot);
+            m_NetworkWriter.Write(client.hp);
             int playersInGameplayScene = 0;
 
             // TODO: Set clients position and rotation according to a random spawn point
@@ -536,9 +586,38 @@ public class Server_Demo : MonoBehaviour
                     m_NetworkWriter.Write(playerObj.rotation_x);
                     m_NetworkWriter.Write(playerObj.rotation_y);
                     m_NetworkWriter.Write(playerObj.rotation_z);
-                    //m_NetworkWriter.Write(playerObj.hp);  // TODO
+                    m_NetworkWriter.Write(playerObj.hp);  // TODO
 
                 }
+            }
+
+
+            m_NetworkWriter.Write(enemyList.Count);
+
+            foreach (EnemyAI enemy in enemyList)
+            {
+                m_NetworkWriter.Write(enemy.pid);
+                m_NetworkWriter.Write(enemy.position);
+                m_NetworkWriter.Write(enemy.rotation);
+                m_NetworkWriter.Write(enemy.hp);
+            }
+
+            m_NetworkWriter.Write(bulletList.Count);
+
+            foreach (bulletObject bullet in bulletList)
+            {
+                m_NetworkWriter.Write(bullet.id);
+                m_NetworkWriter.Write(bullet.owner_id);
+                m_NetworkWriter.Write(bullet.position);
+            }
+
+            m_NetworkWriter.Write(pickupList.Count);
+
+            foreach (pickupObject pickup in pickupList)
+            {
+                m_NetworkWriter.Write(pickup.id);
+                m_NetworkWriter.Write(pickup.type);
+                m_NetworkWriter.Write(pickup.position);
             }
             peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
             SendNewGameplayPlayerInfo(guid);
@@ -583,6 +662,7 @@ public class Server_Demo : MonoBehaviour
                     Vector3 rotation = new Vector3(client.rotation_x, client.rotation_y, client.rotation_z);
                     m_NetworkWriter.Write(position);
                     m_NetworkWriter.Write(rotation);
+                    m_NetworkWriter.Write(client.hp);
                     peer.SendData(GetGUID(playerObj), Peer.Reliability.Reliable, 0, m_NetworkWriter);
                 }
             }
@@ -688,22 +768,7 @@ public class Server_Demo : MonoBehaviour
 
         clients[guid] = tempObj;
 
-        //if (m_NetworkWriter.StartWritting())
-        //{
-        //    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWPLAYER);
-        //    m_NetworkWriter.Write(tempObj.id);
-        //    m_NetworkWriter.Write(tempObj.name);
-        //    m_NetworkWriter.Write(tempObj.m_x);
-        //    m_NetworkWriter.Write(tempObj.m_y);
-        //    m_NetworkWriter.Write(tempObj.m_z);
-        //    m_NetworkWriter.Write(tempObj.rotation_x);
-        //    m_NetworkWriter.Write(tempObj.rotation_y);
-        //    m_NetworkWriter.Write(tempObj.rotation_z);
-        //    m_NetworkWriter.Write(tempObj.playerNum);
-
-        //    SendToAll(guid, m_NetworkWriter, true);
-        //    // peer.SendBroadcast(Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
-        //}
+        
     }
     private void SendToAll(ulong guid, NetworkWriter _writer, bool broadcast)
     {
@@ -730,7 +795,7 @@ public class Server_Demo : MonoBehaviour
 
                     m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYENEMY);
                     m_NetworkWriter.Write(enemyID);
-
+                    AddScore(0, 20.0f);
                     enemyList.Remove(enemy);
                     Destroy(enemy.gameObject);
                     Debug.Log("Destroying Enemy " + enemyID);
@@ -751,7 +816,7 @@ public class Server_Demo : MonoBehaviour
             pickupObject pickup = new pickupObject(pickupID);
             ++pickupID;
             pickup.position = position;
-            
+            pickupList.Add(pickup);
             // TODO: Spawn random pickups
             m_NetworkWriter.Write(pickup.id);
             m_NetworkWriter.Write(pickup.type);
@@ -880,6 +945,15 @@ public class Server_Demo : MonoBehaviour
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYHEALTHPICKUP);
             m_NetworkWriter.Write(playerID);
             m_NetworkWriter.Write(pickupID);
+
+            foreach(pickupObject pickup in pickupList)
+            {
+                if (pickup.id == pickupID)
+                {
+                    pickupList.Remove(pickup);
+                }
+            }
+
             foreach (ulong guids in clients.Keys)
             {
                 peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);

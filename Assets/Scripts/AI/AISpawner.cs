@@ -8,7 +8,7 @@ public class AISpawner : MonoBehaviour
     public float spawnCooldown = 10;
     public float timer = 10;
 
-
+    public bool inGame = false;
 
     void Start()
     {
@@ -18,18 +18,21 @@ public class AISpawner : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(timer < spawnCooldown)
+        if(inGame)
         {
-            // spawn ai
-            //EnemyAI newAI = new EnemyAI();
-            //newAI.gameObject.transform.position = gameObject.transform.position;
-            //timer = spawnCooldown;
-
-            // Ask server call spawn AI
-        }
-        else
-        {
-            timer -= Time.deltaTime;
+            if (timer < 0)
+            {
+                // Ask server call spawn AI
+                if (Server_Demo.Instance)
+                {
+                    Server_Demo.Instance.SpawnEnemy();
+                    timer = spawnCooldown;
+                }
+            }
+            else
+            {
+                timer -= Time.deltaTime;
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ public class EnemyAI : MonoBehaviour
 
     private uint id;
     private bool isController;
-    private float healthPoints = 150;
+    private float healthPoints = 100;
     private float damage = 25;
     private float movementSpeed = 10000;
     public NavMeshAgent agent;
