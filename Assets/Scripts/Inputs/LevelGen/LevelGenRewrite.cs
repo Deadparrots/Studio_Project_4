@@ -25,6 +25,7 @@ public class LevelGenRewrite : MonoBehaviour
     // will probably do on free time
     List<bool> map = new List<bool>();
     public List<GameObject> prefabs = new List<GameObject>();
+    public List<GameObject> populateprefabs = new List<GameObject>();
     private List<RoomRewrite> GeneratedRooms = new List<RoomRewrite>();
 
     public GameObject Spawn; // The GameObject where the players start.
@@ -32,6 +33,9 @@ public class LevelGenRewrite : MonoBehaviour
 
     public GameObject wall = null; // used to fill in a doorway that has been blocked
     private int gridsize;
+
+    public float gridWorldSize = 10f;
+    public float populatefillrate = 0.1f;
 
     private void Start()
     {
@@ -89,6 +93,7 @@ public class LevelGenRewrite : MonoBehaviour
         temporary.transform.position = ConvertToWorldPos(GeneratedRooms[EndPoint].position)
             + new Vector3(GeneratedRooms[EndPoint].SizeX * 5, 0, GeneratedRooms[EndPoint].SizeY * 5);
 
+        Populate();
     }
 
     private void Generate(RoomRewrite room)
@@ -205,17 +210,17 @@ public class LevelGenRewrite : MonoBehaviour
     {
         int y = sumvalue / gridsize;
         int x = sumvalue % gridsize;
-        return new Vector3(x * 10f, 0, y * 10f);
+        return new Vector3(x * gridWorldSize, 0, y * gridWorldSize);
     }
 
     private Vector3 ConvertToWorldPos(Vector2 position)
     {
-        return new Vector3(position.x * 10f, 0, position.y * 10f);
+        return new Vector3(position.x * gridWorldSize, 0, position.y * gridWorldSize);
     }
 
     private Vector3 ConvertToWorldPos(int x, int y)
     {
-        return new Vector3(x * 10f, 0, y * 10f);
+        return new Vector3(x * gridWorldSize, 0, y * gridWorldSize);
     }
 
     private void PrintInfo(RoomRewrite room)
@@ -248,6 +253,20 @@ public class LevelGenRewrite : MonoBehaviour
                 newwall.transform.position = ConvertToWorldPos(room.position) + new Vector3(9.5f, 1.5f, 5) + temp;
                 newwall.transform.rotation = Quaternion.Euler(0, 90, 0);
                 break;
+        }
+    }
+
+    private void Populate()
+    {
+        for (int i = 0; GeneratedRooms.Count > i;i++)
+        {
+            for (int j = 0; (int)(GeneratedRooms[i].SizeX * ((gridWorldSize - 2 ) * (gridWorldSize - 2)) * populatefillrate) > j;j++)
+            {
+                GameObject populate = Instantiate(populateprefabs[Random.Range(0, populateprefabs.Count)]);
+                populate.transform.position = GeneratedRooms[i].gameObject.transform.position
+                    + new Vector3((int)Random.Range(0, GeneratedRooms[i].SizeX * (gridWorldSize - 2)) + 1, 0, (int)Random.Range(0, GeneratedRooms[i].SizeX * (gridWorldSize - 2)) + 1);
+                populate.GetComponent<Rigidbody>().position = populate.transform.position;
+            }
         }
     }
 }

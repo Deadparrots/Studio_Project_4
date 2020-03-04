@@ -115,6 +115,12 @@ public class PlayerMovement : MonoBehaviour
             else if (manager)
                     manager.isMoving = false;
 
+            if (Input.GetKey(InputManager.MoveForward))
+            {
+                float radian = -(Globals.MouseToCenterAngle - 90) * Mathf.Deg2Rad;
+                velocity = (new Vector3(Mathf.Cos(radian), 0, Mathf.Sin(radian))) * movementSpeed;
+            }
+
             if (Input.GetKeyDown(InputManager.Weapon1))
             {
                 Client_Demo.Instance.Sendgun();
