@@ -39,6 +39,7 @@ public class Client_Demo : MonoBehaviour
     private string userName;
     Camera m_MainCamera;
     SceneManagement sceneMgr;
+    bool canrevive = false;
     private void Awake()
     {
         Instance = this;
@@ -91,7 +92,21 @@ public class Client_Demo : MonoBehaviour
             player.previve = false;
             player.hp = 100.0f;
         }
+        if(Input.GetKeyDown(KeyCode.L))
+        {
+            canrevive = !canrevive;
+        }
+        if(canrevive == true)
+        {
+            if(player.hp <= 0.0f)
+            {
+                player.hp = 100.0f;
+            }
+        }
+        
+       
     }
+   
     public void Sendgun()
     {
         if (m_NetworkWriter.StartWritting())
@@ -665,11 +680,12 @@ public class Client_Demo : MonoBehaviour
                         me.hp = m_NetworkReader.ReadFloat();
                         me.pscore = m_NetworkReader.ReadFloat();
                         me.pmoney = m_NetworkReader.ReadFloat();
+                        me.previve = m_NetworkReader.ReadBoolean();
 
                         me.healthBar = GameObject.Find("hp").GetComponent<Image>();
                         me.ScoreText = GameObject.Find("scoretext").GetComponent<Text>();
                         me.MoneyText = GameObject.Find("moneytext").GetComponent<Text>();
-
+                        me.revival = GameObject.Find("inventory2").GetComponent<Image>();
                         int playerCount = m_NetworkReader.ReadInt32();
 
                         for (int i = 0; i < playerCount; ++i)
