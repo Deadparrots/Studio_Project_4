@@ -3898,8 +3898,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 103627081}
   m_HandleRect: {fileID: 103627080}
   m_Direction: 2
-  m_Value: 0.9997635
-  m_Size: 0.5409338
+  m_Value: 0.9997633
+  m_Size: 0.5409337
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -7069,3 +7069,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 757272a464830904abbfcf5f23edf450, type: 3}
+--- !u!1 &9142528323544115603 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 991112994018542613, guid: 757272a464830904abbfcf5f23edf450,
+    type: 3}
+  m_PrefabInstance: {fileID: 9142528323544115602}
+  m_PrefabAsset: {fileID: 0}
+--- !u!111 &9142528323544115604
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9142528323544115603}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 7400000, guid: 47f2bcebaf9e20047908cd6d7b884a5c, type: 2}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
