@@ -10,6 +10,9 @@ public class PlayerManager : MonoBehaviour
     public TextMesh scoreText;
     private PlayerMovement childScript;
     private float health;
+    private float score;
+    private float money;
+    private bool revive;
     public bool isShooting = false;
     public bool isMoving = false;
     public Animator animator;
@@ -23,6 +26,23 @@ public class PlayerManager : MonoBehaviour
     {
         get { return health; }
         set { health = value; }
+    }
+
+    public float Pscore
+    {
+        get { return score; }
+        set { score = value; }
+    }
+    public float Pmoney
+    {
+        get { return money; }
+        set { money = value; }
+    }
+
+    public bool previve
+    {
+        get { return revive; }
+        set { revive = value; }
     }
 
     public Vector3 pRotation
