@@ -100,6 +100,7 @@ public class Server_Demo : MonoBehaviour
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<bulletObject> bulletList = new List<bulletObject>();
     private List<pickupObject> pickupList = new List<pickupObject>();
+    
     private uint playerID;
     private uint enemyID;
     private uint pickupID;
@@ -555,12 +556,16 @@ public class Server_Demo : MonoBehaviour
             client.rotation_z = spawnPointRot.z;
 
             client.hp = 100;
+            client.score = 0;
+            client.money = 100;
 
             clients[guid] = client;
 
             m_NetworkWriter.Write(spawnPointPos);
             m_NetworkWriter.Write(spawnPointRot);
             m_NetworkWriter.Write(client.hp);
+            m_NetworkWriter.Write(client.score);
+            m_NetworkWriter.Write(client.money);
             int playersInGameplayScene = 0;
 
             // TODO: Set clients position and rotation according to a random spawn point
@@ -587,6 +592,8 @@ public class Server_Demo : MonoBehaviour
                     m_NetworkWriter.Write(playerObj.rotation_y);
                     m_NetworkWriter.Write(playerObj.rotation_z);
                     m_NetworkWriter.Write(playerObj.hp);  // TODO
+                    m_NetworkWriter.Write(client.score);
+                    m_NetworkWriter.Write(client.money);
 
                 }
             }
@@ -795,7 +802,7 @@ public class Server_Demo : MonoBehaviour
 
                     m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYENEMY);
                     m_NetworkWriter.Write(enemyID);
-                    AddScore(0, 20.0f);
+                   // AddScore(0, 20.0f);
                     enemyList.Remove(enemy);
                     Destroy(enemy.gameObject);
                     Debug.Log("Destroying Enemy " + enemyID);
@@ -867,21 +874,6 @@ public class Server_Demo : MonoBehaviour
         if (m_NetworkWriter.StartWritting())
         {
             m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_ADDMONEY);
-            m_NetworkWriter.Write(playerID);
-            m_NetworkWriter.Write(money);
-
-
-            foreach (ulong guids in clients.Keys)
-            {
-                peer.SendData(guids, Peer.Reliability.Reliable, 0, m_NetworkWriter);
-            }
-        }
-    }
-    public void ReduceMoney(uint playerID, float money)
-    {
-        if (m_NetworkWriter.StartWritting())
-        {
-            m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_REDUCEMONEY);
             m_NetworkWriter.Write(playerID);
             m_NetworkWriter.Write(money);
 

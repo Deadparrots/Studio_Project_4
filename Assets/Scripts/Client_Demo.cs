@@ -217,7 +217,6 @@ public class Client_Demo : MonoBehaviour
             }
         }
 
-        //Debug.Log("Player " + playersList[0].pid + " HP: " + playersList[0].hp);
     }
 
 
@@ -442,8 +441,7 @@ public class Client_Demo : MonoBehaviour
                             {
                                 Debug.Log(dmg + "dmg dealt to player " + playerID);
                                 player.hp -= dmg;
-                                Uimanager UI = gameObject.GetComponent<Uimanager>();
-                                UI.Hpdown(25.0f);
+                              
                                 break;
                             }
                         }
@@ -460,8 +458,8 @@ public class Client_Demo : MonoBehaviour
                             {
                                 Debug.Log(score + "score added to player " + playerID);
                                 player.pscore += score;
-                                Uimanager UI = gameObject.GetComponent<Uimanager>();
-                                UI.Scoreup(25.0f);
+                                Debug.Log("Curr score" + player.pscore);
+                               
                                 break;
                             }
                         }
@@ -478,26 +476,7 @@ public class Client_Demo : MonoBehaviour
                             {
                                 Debug.Log(money + "money added to player " + playerID);
                                 player.pmoney += money;
-                                Uimanager UI = gameObject.GetComponent<Uimanager>();
-                                UI.Moneyup(25.0f);
-                                break;
-                            }
-                        }
-                    }
-                    break;
-
-                case (byte)Packets_ID.ID_REDUCEMONEY:
-                    {
-                        uint playerID = m_NetworkReader.ReadUInt32();
-                        float money = m_NetworkReader.ReadFloat();
-                        foreach (PlayerManager player in playersList)
-                        {
-                            if (player.pid == playerID)
-                            {
-                                Debug.Log(money + "money taken from player " + playerID);
-                                player.pmoney -= money;
-                                Uimanager UI = gameObject.GetComponent<Uimanager>();
-                                UI.Moneydown(1000.0f);
+                                
                                 break;
                             }
                         }
@@ -513,8 +492,6 @@ public class Client_Demo : MonoBehaviour
                             if (player.pid == playerID)
                             {
                                 player.previve = true;
-                                Uimanager UI = gameObject.GetComponent<Uimanager>();
-                                UI.Moneydown(1000.0f);
                                 break;
                             }
                         }
@@ -685,8 +662,12 @@ public class Client_Demo : MonoBehaviour
                         me.position = m_NetworkReader.ReadVector3();
                         me.pRotation = m_NetworkReader.ReadVector3();
                         me.hp = m_NetworkReader.ReadFloat();
+                        me.pmoney = m_NetworkReader.ReadFloat();
+                        me.pscore = m_NetworkReader.ReadFloat();
 
                         me.healthBar = GameObject.Find("hp").GetComponent<Image>();
+                        me.ScoreText = GameObject.Find("scoretext").GetComponent<Text>();
+                        me.MoneyText = GameObject.Find("moneytext").GetComponent<Text>();
 
                         int playerCount = m_NetworkReader.ReadInt32();
 
@@ -704,6 +685,7 @@ public class Client_Demo : MonoBehaviour
                                     player.pRotation = rotation;
                                     // TODO: Set health
                                     player.hp = hp;
+
                                     break;
                                 }
                             }
