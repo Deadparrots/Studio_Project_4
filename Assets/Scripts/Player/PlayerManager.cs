@@ -8,7 +8,6 @@ public class PlayerManager : MonoBehaviour
     private uint id;
     public GameObject childPlayer;
     public TextMesh childName;
-    public TextMesh scoreText;
     private PlayerMovement childScript;
     private float health;
     private float score;
@@ -18,6 +17,8 @@ public class PlayerManager : MonoBehaviour
     public bool isMoving = false;
     public Animator animator;
     public Image healthBar;
+    public Text ScoreText;
+    public Text MoneyText;
     public uint pid
     {
         get { return id; }
@@ -135,7 +136,13 @@ public class PlayerManager : MonoBehaviour
         else
             animator.SetBool("isMoving", false);
 
+<<<<<<< HEAD
         if (healthBar != null)
             healthBar.fillAmount = hp * 0.01f;
+=======
+        healthBar.fillAmount = hp * 0.01f;
+        ScoreText.text = pscore.ToString();
+        MoneyText.text = pmoney.ToString();
+>>>>>>> d86c6ee004409477570314b787ec03e3bea6743e
     }
 }
