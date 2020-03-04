@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 public class Uimanager : MonoBehaviour
 {
@@ -7,35 +8,41 @@ public class Uimanager : MonoBehaviour
     public Text ScoreText;
     public Text MoneyText;
 
-    private int score = 0;
-    private int money = 100;
-    private int hp = 100;
+    private float score = 0.0f;
+    private float money = 100.0f;
+    private float hp = 100.0f;
     // Use this for initialization
     void Start()
     {
-
+           
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            score += 10;
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            money += 10;
-            Debug.Log(hp);
-        }
-        if (Input.GetKeyDown(KeyCode.J))
-        {
-            hp -= 10;
-            Debug.Log(hp);
-        }
-
         ScoreText.text = score.ToString();
         MoneyText.text = money.ToString();
-        HP.fillAmount = hp / 100;
+        HP.fillAmount = hp / 100.0f;
+    }
+
+    public void Scoreup(float add)
+    {
+        score += add;
+    }
+    public void Moneyup(float add)
+    {
+        money += add;
+    }
+    public void Moneydown(float minus)
+    {
+        money -= minus;
+    }
+    public void Hpup(float add)
+    {
+        hp += add;
+    }
+    public void Hpdown(float minus)
+    {
+        hp -= minus;
     }
 }

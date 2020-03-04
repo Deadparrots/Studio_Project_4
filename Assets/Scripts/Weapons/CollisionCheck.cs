@@ -42,10 +42,14 @@ public class CollisionCheck : MonoBehaviour
             }
             else if (collision.gameObject.name == "MeleeEnemyAI(Clone)")
             {
+                PlayerManager player = gameObject.GetComponent<PlayerManager>();
                 // Deal dmg to enemy
                 EnemyAI enemy = collision.gameObject.GetComponent<EnemyAI>();
                 Server_Demo.Instance.DmgEnemy(enemy.pid, 25.0f);
-
+                if(enemy.hp <= 0)
+                {
+                    Server_Demo.Instance.AddScore(player.pid, 100.0f);
+                }
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
             }
@@ -61,7 +65,7 @@ public class CollisionCheck : MonoBehaviour
             if (gameObject.name == "Player(Clone)")
             {
                 PlayerManager player = gameObject.GetComponent<PlayerManager>();
-
+                Server_Demo.Instance.AddMoney(player.pid, 25.0f);
                 // TODO: Destroy Pickups
                 Server_Demo.Instance.DestroyHealthPickUp(player.pid, pickup.pid);
             }

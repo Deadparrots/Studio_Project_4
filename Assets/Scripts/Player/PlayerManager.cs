@@ -10,6 +10,8 @@ public class PlayerManager : MonoBehaviour
     public TextMesh scoreText;
     private PlayerMovement childScript;
     private float health;
+    private float score;
+    private float money;
     public uint pid
     {
         get { return id; }
@@ -20,6 +22,17 @@ public class PlayerManager : MonoBehaviour
     {
         get { return health; }
         set { health = value; }
+    }
+
+    public float Pscore
+    {
+        get { return score; }
+        set { score = value; }
+    }
+    public float Pmoney
+    {
+        get { return money; }
+        set { money = value; }
     }
 
     public Vector3 pRotation

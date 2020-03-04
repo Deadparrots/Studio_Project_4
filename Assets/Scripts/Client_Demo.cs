@@ -442,6 +442,44 @@ public class Client_Demo : MonoBehaviour
                             {
                                 Debug.Log(dmg + "dmg dealt to player " + playerID);
                                 player.hp -= dmg;
+                                Uimanager UI = gameObject.GetComponent<Uimanager>();
+                                UI.Hpdown(25.0f);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_ADDSCORE:
+                    {
+                        uint playerID = m_NetworkReader.ReadUInt32();
+                        float score = m_NetworkReader.ReadFloat();
+                        foreach (PlayerManager player in playersList)
+                        {
+                            if (player.pid == playerID)
+                            {
+                                Debug.Log(score + "score added to player " + playerID);
+                                player.Pscore += score;
+                                Uimanager UI = gameObject.GetComponent<Uimanager>();
+                                UI.Scoreup(25.0f);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+
+                case (byte)Packets_ID.ID_ADDMONEY:
+                    {
+                        uint playerID = m_NetworkReader.ReadUInt32();
+                        float money = m_NetworkReader.ReadFloat();
+                        foreach (PlayerManager player in playersList)
+                        {
+                            if (player.pid == playerID)
+                            {
+                                Debug.Log(money + "money added to player " + playerID);
+                                player.Pmoney -= money;
+                                Uimanager UI = gameObject.GetComponent<Uimanager>();
+                                UI.Moneyup(25.0f);
                                 break;
                             }
                         }
