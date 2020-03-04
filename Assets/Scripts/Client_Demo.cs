@@ -19,6 +19,7 @@ public class Client_Demo : MonoBehaviour
     [SerializeField] private GameObject enemyReference;
     [SerializeField] private GameObject healthPickupReference;
     [SerializeField] private GameObject bulletReference;
+    public GameObject popUpReference;
 
 
     private List<PlayerManager> playersList = new List<PlayerManager>();

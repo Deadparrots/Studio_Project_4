@@ -119,6 +119,15 @@ public class PlayerMovement : MonoBehaviour
             {
                 Client_Demo.Instance.Sendgun();
             }
+            
+            if (transform.position.y > 0)
+            {
+                velocity.y -= 5;
+            }
+            else if (0 > transform.position.y)
+            {
+                transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+            }
 
             //if (Input.GetKey("up"))
             //{

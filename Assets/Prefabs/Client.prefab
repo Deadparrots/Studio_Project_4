@@ -60,6 +60,8 @@ MonoBehaviour:
     type: 3}
   bulletReference: {fileID: 6957303512602015903, guid: 81c779ff52394b44e8e0521037712608,
     type: 3}
+  popUpReference: {fileID: 416941082134120318, guid: 02018152cfdf6ac4e845cb9a32f12b8b,
+    type: 3}
 --- !u!114 &2491912384217962079
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -85,6 +85,7 @@ public class LevelGenRewrite : MonoBehaviour
 
         int EndPoint = Random.Range(0, GeneratedRooms.Count);
         temporary = Instantiate(Exit);
+        temporary.name = "Exit";
         temporary.transform.position = ConvertToWorldPos(GeneratedRooms[EndPoint].position)
             + new Vector3(GeneratedRooms[EndPoint].SizeX * 5, 0, GeneratedRooms[EndPoint].SizeY * 5);
 
