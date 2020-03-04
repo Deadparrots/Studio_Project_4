@@ -39,6 +39,9 @@ public class CollisionCheck : MonoBehaviour
             {
                 // Destroy Bullet
                 Server_Demo.Instance.DestroyBullet(bulletManager.pid);
+                DamagePopUp popup = Instantiate(Client_Demo.Instance.popUpReference).GetComponent<DamagePopUp>();
+                popup.text = "Hit a Wall";
+                popup.position = gameObject.transform.position;
             }
             else if (collision.gameObject.name == "MeleeEnemyAI")
             {
@@ -70,6 +73,18 @@ public class CollisionCheck : MonoBehaviour
                 Server_Demo.Instance.DestroyHealthPickUp(player.pid, pickup.pid);
             }
         }
+
+        if (gameObject.name == "Player(Clone)"|| gameObject.name == "Body")
+        {
+            if (collision.gameObject.name.Equals("Exit"))
+            {
+                Animation temp = collision.gameObject.GetComponent<Animation>();
+                temp.Play("ExitAnimEnter");
+
+                GameObject border = collision.gameObject.transform.Find("border").gameObject;
+            }
+        }
+
     }
 
 }
