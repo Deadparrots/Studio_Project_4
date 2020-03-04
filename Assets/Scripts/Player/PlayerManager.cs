@@ -143,11 +143,13 @@ public class PlayerManager : MonoBehaviour
         MoneyText.text = pmoney.ToString();
         if(previve == true)
         {
-            revival.fillAmount = 1;
+            if(revival)
+               revival.fillAmount = 1;
         }
         else
         {
-            revival.fillAmount = 0;
+            if (revival)
+                revival.fillAmount = 0;
         }
     }
 }
