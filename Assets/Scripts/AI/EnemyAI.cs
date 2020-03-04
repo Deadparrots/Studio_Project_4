@@ -48,6 +48,7 @@ public class EnemyAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = true;
         agent.updatePosition = true;
+        Debug.Log("COMMIT");
     }
     void Start()
     {
