@@ -558,6 +558,7 @@ public class Server_Demo : MonoBehaviour
             client.hp = 100;
             client.score = 0;
             client.money = 100;
+            client.revive = false;
 
             clients[guid] = client;
 
@@ -566,6 +567,7 @@ public class Server_Demo : MonoBehaviour
             m_NetworkWriter.Write(client.hp);
             m_NetworkWriter.Write(client.score);
             m_NetworkWriter.Write(client.money);
+            m_NetworkWriter.Write(client.revive);
             int playersInGameplayScene = 0;
 
             // TODO: Set clients position and rotation according to a random spawn point
