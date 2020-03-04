@@ -763,22 +763,7 @@ public class Server_Demo : MonoBehaviour
 
         clients[guid] = tempObj;
 
-        //if (m_NetworkWriter.StartWritting())
-        //{
-        //    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_NEWPLAYER);
-        //    m_NetworkWriter.Write(tempObj.id);
-        //    m_NetworkWriter.Write(tempObj.name);
-        //    m_NetworkWriter.Write(tempObj.m_x);
-        //    m_NetworkWriter.Write(tempObj.m_y);
-        //    m_NetworkWriter.Write(tempObj.m_z);
-        //    m_NetworkWriter.Write(tempObj.rotation_x);
-        //    m_NetworkWriter.Write(tempObj.rotation_y);
-        //    m_NetworkWriter.Write(tempObj.rotation_z);
-        //    m_NetworkWriter.Write(tempObj.playerNum);
-
-        //    SendToAll(guid, m_NetworkWriter, true);
-        //    // peer.SendBroadcast(Peer.Priority.Immediate, Peer.Reliability.Reliable, 0);
-        //}
+        
     }
     private void SendToAll(ulong guid, NetworkWriter _writer, bool broadcast)
     {
@@ -805,7 +790,7 @@ public class Server_Demo : MonoBehaviour
 
                     m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_DESTROYENEMY);
                     m_NetworkWriter.Write(enemyID);
-
+                    AddScore(0, 20.0f);
                     enemyList.Remove(enemy);
                     Destroy(enemy.gameObject);
                     Debug.Log("Destroying Enemy " + enemyID);
