@@ -68,14 +68,6 @@ public class Client_Demo : MonoBehaviour
     protected void Update()
     {
         delta += Time.deltaTime;
-        //if (Input.GetKeyDown(KeyCode.Alpha1))
-        //{
-        //    GetComponent<GameData>().inventorychoice = 1;
-        //}
-        //else if(Input.GetKeyDown(KeyCode.Alpha2))
-        //{
-        //    GetComponent<GameData>().inventorychoice = 2;
-        //}
         if (delta > 0.5f)
         {
             SendMovement();
@@ -92,14 +84,12 @@ public class Client_Demo : MonoBehaviour
             me.position = new Vector3(10, 10, 0);
         }
 
-        PlayerManager player = gameObject.GetComponent<PlayerManager>();
+        PlayerManager player = playersList[0];
         if(player.previve == true && player.hp <= 0)
         {
             player.previve = false;
             player.hp = 100.0f;
         }
-
-
     }
     private void Sendgun()
     {
@@ -470,7 +460,7 @@ public class Client_Demo : MonoBehaviour
                             if (player.pid == playerID)
                             {
                                 Debug.Log(score + "score added to player " + playerID);
-                                player.Pscore += score;
+                                player.pscore += score;
                                 Uimanager UI = gameObject.GetComponent<Uimanager>();
                                 UI.Scoreup(25.0f);
                                 break;
@@ -488,7 +478,7 @@ public class Client_Demo : MonoBehaviour
                             if (player.pid == playerID)
                             {
                                 Debug.Log(money + "money added to player " + playerID);
-                                player.Pmoney += money;
+                                player.pmoney += money;
                                 Uimanager UI = gameObject.GetComponent<Uimanager>();
                                 UI.Moneyup(25.0f);
                                 break;
@@ -506,7 +496,7 @@ public class Client_Demo : MonoBehaviour
                             if (player.pid == playerID)
                             {
                                 Debug.Log(money + "money taken from player " + playerID);
-                                player.Pmoney -= money;
+                                player.pmoney -= money;
                                 Uimanager UI = gameObject.GetComponent<Uimanager>();
                                 UI.Moneydown(1000.0f);
                                 break;
