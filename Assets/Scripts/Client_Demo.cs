@@ -685,6 +685,9 @@ public class Client_Demo : MonoBehaviour
                         me.position = m_NetworkReader.ReadVector3();
                         me.pRotation = m_NetworkReader.ReadVector3();
                         me.hp = m_NetworkReader.ReadFloat();
+
+                        me.healthBar = GameObject.Find("hp").GetComponent<Image>();
+
                         int playerCount = m_NetworkReader.ReadInt32();
 
                         for (int i = 0; i < playerCount; ++i)

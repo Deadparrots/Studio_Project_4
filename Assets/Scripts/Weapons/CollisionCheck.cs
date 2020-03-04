@@ -22,12 +22,12 @@ public class CollisionCheck : MonoBehaviour
     {
         if (collision.gameObject.tag.Equals("EnemyWeapon"))
         {
-            if (gameObject.name == "Player(Clone)")
+            if (gameObject.name == "Body")
             {
-                PlayerManager player = gameObject.GetComponent<PlayerManager>();
+                PlayerManager player = gameObject.GetComponentInParent<PlayerManager>();
                 // Call server to deal weapon dmg to player
                 // TODO: CHANGE THE DMG TO REFERENCE FROM WEAPONS DMG STAT
-                Server_Demo.Instance.DmgPlayer(player.pid, 25.0f);
+                Server_Demo.Instance.DmgPlayer(player.pid, 10.0f);
             }
         }
 
