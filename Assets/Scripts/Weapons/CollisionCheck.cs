@@ -78,12 +78,45 @@ public class CollisionCheck : MonoBehaviour
             if (collision.gameObject.name.Equals("Exit"))
             {
                 Animation temp = collision.gameObject.GetComponent<Animation>();
-                temp.Play("ExitAnimEnter");
-
                 GameObject border = collision.gameObject.transform.Find("border").gameObject;
+                if (!temp.isPlaying && (int)border.transform.position.y == 0 )
+                    temp.Play("ExitAnimEnter");
             }
+            
         }
 
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        if (gameObject.name == "Player(Clone)" || gameObject.name == "Body")
+        {
+            if (collision.gameObject.name.Equals("border"))
+            {
+                GameObject exit = collision.gameObject.transform.parent.gameObject;
+                Animation temp = exit.GetComponent<Animation>();
+                if (!temp.isPlaying && collision.gameObject.transform.position.y == 1)
+                    temp.Play("ExitAnimLeave");
+            }
+
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (gameObject.name == "Player(Clone)" || gameObject.name == "Body")
+        {
+            if (collision.gameObject.name.Equals("border"))
+            {
+                GameObject exit = collision.gameObject.transform.parent.gameObject;
+                Animation temp = exit.GetComponent<Animation>();
+                if (!temp.isPlaying && collision.gameObject.transform.position.y == 1)
+                {
+                    temp.Play("ExitAnimLeave");
+                }
+            }
+
+        }
     }
 
 }
