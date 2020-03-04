@@ -9,4 +9,5 @@ public static class Globals
     public static float ExitTimer = 5f;
     public static float countDown = 0f;
     public static float countDownlastsecond = 0f;
+    public static bool endscreenfuckery = false;
 }

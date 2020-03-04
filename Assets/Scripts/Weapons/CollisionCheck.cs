@@ -118,6 +118,9 @@ public class CollisionCheck : MonoBehaviour
             if (collision.gameObject.name == "Exit") // since inside shld only run once per frame
             {
                 Globals.countDown += Time.deltaTime;
+
+                if (Globals.endscreenfuckery)
+                    return;
                 
                 if (Globals.countDown - 1 > Globals.countDownlastsecond)
                 {
@@ -133,6 +136,7 @@ public class CollisionCheck : MonoBehaviour
                 if (Globals.countDown > Globals.ExitTimer)
                 {
                     Client_Demo.Instance.GetSceneManager().ToEndScreen();
+                    Globals.endscreenfuckery = true;
                 }
             }
         }

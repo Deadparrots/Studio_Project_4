@@ -49,7 +49,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   childPlayer: {fileID: 6662951540614765507}
   childName: {fileID: 6794553396203311050}
-  scoreText: {fileID: 0}
   isShooting: 0
   isMoving: 0
   animator: {fileID: 0}
@@ -59,6 +58,7 @@ MonoBehaviour:
     type: 3}
   MoneyText: {fileID: 481149344036070892, guid: c0db0c4dd8c5c60428a1e7be51e47169,
     type: 3}
+  revival: {fileID: 0}
 --- !u!114 &6668402913644665805
 MonoBehaviour:
   m_ObjectHideFlags: 0

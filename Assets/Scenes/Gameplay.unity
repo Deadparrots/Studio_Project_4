@@ -3754,7 +3754,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1243507066}
+      - m_Target: {fileID: 0}
         m_MethodName: set_previve
         m_Mode: 6
         m_Arguments:
@@ -3942,7 +3942,6 @@ GameObject:
   - component: {fileID: 1243507063}
   - component: {fileID: 1243507062}
   - component: {fileID: 1243507065}
-  - component: {fileID: 1243507066}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -4013,27 +4012,6 @@ MonoBehaviour:
   Shopin: {fileID: 1548353521}
   Shopout: {fileID: 1225432787}
   Shopbg: {fileID: 1825755104}
---- !u!114 &1243507066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1243507061}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0edaaf748773ff46a1a1a19fb2b727c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  childPlayer: {fileID: 0}
-  childName: {fileID: 0}
-  isShooting: 0
-  isMoving: 0
-  animator: {fileID: 0}
-  healthBar: {fileID: 0}
-  ScoreText: {fileID: 0}
-  MoneyText: {fileID: 0}
-  revival: {fileID: 1198318888}
 --- !u!1 &1299203769
 GameObject:
   m_ObjectHideFlags: 0

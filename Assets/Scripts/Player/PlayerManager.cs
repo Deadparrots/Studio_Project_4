@@ -76,7 +76,7 @@ public class PlayerManager : MonoBehaviour
     {
         Debug.Log("player set!!");
 
-        //childScript.isPlayer = _boolean;
+        childScript.isPlayer = _boolean;
     }
     public string pName
     {

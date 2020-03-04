@@ -46,8 +46,20 @@ public class SceneManagement : MonoBehaviour
             {
                 SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
                 currentScene = sceneName;
+                SceneManager.sceneLoaded += OnSceneLoaded;
             }
         }
+        
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Gameplay")
+        {
+            SceneManager.SetActiveScene(scene);
+        }
+
+        Debug.Log("Loaded Scene" + scene.name);
     }
 }
     

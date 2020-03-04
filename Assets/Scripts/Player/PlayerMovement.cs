@@ -77,8 +77,9 @@ public class PlayerMovement : MonoBehaviour
         {
 
             if (InputManager.inputManager != null)
-                if (InputManager.inputManager.Menu.activeSelf)
-                    return;
+                if (InputManager.inputManager.Menu != null)
+                    if (InputManager.inputManager.Menu.activeSelf)
+                        return;
 
             velocity.Set(0, 0, 0);
             if (Input.GetKey(InputManager.MoveUp))
