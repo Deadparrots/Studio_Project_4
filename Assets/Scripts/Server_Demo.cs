@@ -99,6 +99,7 @@ public class Server_Demo : MonoBehaviour
     private Dictionary<ulong, playerObject> clients = new Dictionary<ulong, playerObject>();
     private List<EnemyAI> enemyList = new List<EnemyAI>();
     private List<bulletObject> bulletList = new List<bulletObject>();
+    private List<pickupObject> pickupList = new List<pickupObject>();
     private uint playerID;
     private uint enemyID;
     private uint pickupID;
@@ -596,6 +597,24 @@ public class Server_Demo : MonoBehaviour
                 m_NetworkWriter.Write(enemy.position);
                 m_NetworkWriter.Write(enemy.rotation);
             }
+
+            m_NetworkWriter.Write(bulletList.Count);
+
+            foreach (bulletObject bullet in bulletList)
+            {
+                m_NetworkWriter.Write(bullet.id);
+                m_NetworkWriter.Write(bullet.owner_id);
+                m_NetworkWriter.Write(bullet.position);
+            }
+
+            m_NetworkWriter.Write(pickupList.Count);
+
+            foreach (pickupObject pickup in pickupList)
+            {
+                m_NetworkWriter.Write(pickup.id);
+                m_NetworkWriter.Write(pickup.type);
+                m_NetworkWriter.Write(pickup.position);
+            }
             peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
             SendNewGameplayPlayerInfo(guid);
         }
@@ -807,7 +826,7 @@ public class Server_Demo : MonoBehaviour
             pickupObject pickup = new pickupObject(pickupID);
             ++pickupID;
             pickup.position = position;
-            
+            pickupList.Add(pickup);
             // TODO: Spawn random pickups
             m_NetworkWriter.Write(pickup.id);
             m_NetworkWriter.Write(pickup.type);
