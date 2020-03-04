@@ -83,10 +83,6 @@ public class Client_Demo : MonoBehaviour
             PlayerManager me = playersList[0];
             me.position = new Vector3(10, 10, 0);
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> 7635e844e07dc2e8966f44a1fbd1c74609bf8910
         PlayerManager player = playersList[0];
         if(player.previve == true && player.hp <= 0)
         {
