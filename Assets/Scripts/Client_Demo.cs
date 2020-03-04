@@ -74,17 +74,16 @@ public class Client_Demo : MonoBehaviour
             SendMovement();
             delta = 0;
         }
-        if (Input.GetKeyDown(InputManager.Weapon1))
-        {
-            Sendgun();
-        }
+        //if (Input.GetKeyDown(InputManager.Weapon1))
+        //{
+        //    Sendgun();
+        //}
 
         if (Input.GetKeyDown(KeyCode.R))
         {
             PlayerManager me = playersList[0];
             me.position = new Vector3(10, 10, 0);
         }
-
         PlayerManager player = playersList[0];
         if(player.previve == true && player.hp <= 0)
         {
@@ -92,7 +91,7 @@ public class Client_Demo : MonoBehaviour
             player.hp = 100.0f;
         }
     }
-    private void Sendgun()
+    public void Sendgun()
     {
         if (m_NetworkWriter.StartWritting())
         {
