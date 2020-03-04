@@ -9,9 +9,9 @@ public class PlayerManager : MonoBehaviour
     public GameObject childPlayer;
     public TextMesh childName;
     private PlayerMovement childScript;
-    private float health = 100.0f;
-    private float score = 0;
-    private float money = 100.0f;
+    private float health;
+    private float score;
+    private float money;
     private bool revive;
     public bool isShooting = false;
     public bool isMoving = false;
