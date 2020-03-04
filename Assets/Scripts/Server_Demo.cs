@@ -105,15 +105,19 @@ public class Server_Demo : MonoBehaviour
     private uint bulletID;
     public List<WaypointPath> waypointPathsList = new List<WaypointPath>();
     public List<SpawnPoint> spawnPointList = new List<SpawnPoint>();
+    public List<SpawnPoint> enemySpawnPointList = new List<SpawnPoint>();
     const int MAX_PLAYERS = 4;
     int totalWaypoints = 0;
     bool gameStarted = false;
     private SceneManagement sceneMgr;
+    private AISpawner enemySpawner;
+    [SerializeField] private GameObject enemyReference;
     private void Awake()
     {
         Instance = this;
         sceneMgr = gameObject.GetComponent<SceneManagement>();
         Debug.Log("Server got scene manager");
+        enemySpawner = GetComponent<AISpawner>();
     }
 
     public void Init(int _port)
@@ -447,6 +451,18 @@ public class Server_Demo : MonoBehaviour
             spawnPointList.Add(spawnpoint);
         }
 
+        GameObject[] enemySpawnPoints;
+        enemySpawnPoints = GameObject.FindGameObjectsWithTag("EnemySpawnPoint");
+
+        foreach (GameObject spawn in enemySpawnPoints)
+        {
+            SpawnPoint spawnpoint = new SpawnPoint();
+            spawnpoint.active = true;
+            spawnpoint.position = spawn.transform.position;
+            Debug.Log("EnemySpawnpoint position: " + spawnpoint.position);
+            enemySpawnPointList.Add(spawnpoint);
+        }
+
         GameObject[] waypointPathGOs;
         waypointPathGOs = GameObject.FindGameObjectsWithTag("WaypointPath");
 
@@ -464,7 +480,7 @@ public class Server_Demo : MonoBehaviour
             waypointPathsList.Add(temp);
         }
 
-
+        Debug.Log("Num of waypoint paths: " + waypointPathsList.Count);
 
         foreach (EnemyAI enemy in GameObject.FindObjectsOfType(typeof(EnemyAI)))
         {
@@ -477,10 +493,40 @@ public class Server_Demo : MonoBehaviour
             enemyList.Add(enemy);
 
         }
-
-
-
         gameStarted = true;
+        enemySpawner.inGame = gameStarted;
+    }
+
+    public void SpawnEnemy()
+    {
+        GameObject enemy = Instantiate(enemyReference);
+        EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+        enemyManager.pid = enemyID;
+        enemyManager.controller = true;
+        enemyManager.position = enemySpawnPointList[Random.Range(0, enemySpawnPointList.Count - 1)].position;
+        enemyManager.GetComponent<NavMeshAgent>().Warp(enemyManager.position);
+        // might need an offset on enemy position
+        enemyManager.rotation = new Vector3(0, 0, 0);
+        enemyManager.WayPoints = waypointPathsList[Random.Range(0,waypointPathsList.Count - 1)].wayPoints;
+        enemyManager.WaypointIndex = 0;
+        //enemy.GetComponent<NavMeshAgent>().Warp(enemy.position);
+        ++enemyID;
+        enemyList.Add(enemyManager);
+
+        if (m_NetworkWriter.StartWritting())
+        {
+            foreach (playerObject playerObj in clients.Values)
+            {
+                if (playerObj.inGameplayScene == true)
+                {
+                    m_NetworkWriter.WritePacketID((byte)Packets_ID.ID_SPAWNENEMY);
+                    m_NetworkWriter.Write(enemyManager.pid);
+                    m_NetworkWriter.Write(enemyManager.position);
+                    m_NetworkWriter.Write(enemyManager.rotation);
+                    peer.SendData(GetGUID(playerObj), Peer.Reliability.Reliable, 0, m_NetworkWriter);
+                }
+            }
+        }
     }
 
     private void SendGameplaySceneInfo(ulong guid)
@@ -539,6 +585,16 @@ public class Server_Demo : MonoBehaviour
                     //m_NetworkWriter.Write(playerObj.hp);  // TODO
 
                 }
+            }
+
+
+            m_NetworkWriter.Write(enemyList.Count);
+
+            foreach (EnemyAI enemy in enemyList)
+            {
+                m_NetworkWriter.Write(enemy.pid);
+                m_NetworkWriter.Write(enemy.position);
+                m_NetworkWriter.Write(enemy.rotation);
             }
             peer.SendData(guid, Peer.Reliability.Reliable, 0, m_NetworkWriter);
             SendNewGameplayPlayerInfo(guid);

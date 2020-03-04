@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
+using UnityEngine.AI;
 public class Client_Demo : MonoBehaviour
 {
     public ClientNetInfo m_ClientNetInfo = new ClientNetInfo();
@@ -560,6 +561,19 @@ public class Client_Demo : MonoBehaviour
                     }
                     break;
 
+                case (byte)Packets_ID.ID_SPAWNENEMY:
+                    {
+                        GameObject enemy = Instantiate(enemyReference);
+                        EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+                        enemyManager.pid = m_NetworkReader.ReadUInt32();
+                        Debug.Log("ID: " + enemyManager.pid);
+                        enemyManager.position = m_NetworkReader.ReadVector3();
+                        enemyManager.GetComponent<NavMeshAgent>().Warp(enemyManager.position);
+                        enemyManager.rotation = m_NetworkReader.ReadVector3();
+                        enemyList.Add(enemyManager);
+                    }
+                    break;
+
                 case (byte)Packets_ID.ID_SPAWNPICKUP:
                     {
                         uint pickupID = m_NetworkReader.ReadUInt32();
@@ -691,6 +705,20 @@ public class Client_Demo : MonoBehaviour
                                     break;
                                 }
                             }
+                        }
+
+                        int enemyCount = m_NetworkReader.ReadInt32();
+
+                        for (int i = 0; i < enemyCount; ++i)
+                        {
+                            GameObject enemy = Instantiate(enemyReference);
+                            EnemyAI enemyManager = enemy.GetComponent<EnemyAI>();
+                            enemyManager.pid = m_NetworkReader.ReadUInt32();
+                            Debug.Log("ID: " + enemyManager.pid);
+                            enemyManager.position = m_NetworkReader.ReadVector3();
+                            enemyManager.GetComponent<NavMeshAgent>().Warp(enemyManager.position);
+                            enemyManager.rotation = m_NetworkReader.ReadVector3();
+                            enemyList.Add(enemyManager);
                         }
                     }
                     break;

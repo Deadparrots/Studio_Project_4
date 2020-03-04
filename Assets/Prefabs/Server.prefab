@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6590968707339377251}
   - component: {fileID: 6590968707339377250}
   - component: {fileID: -8392191581575736125}
+  - component: {fileID: 4241089322267068863}
   m_Layer: 0
   m_Name: Server
   m_TagString: Untagged
@@ -45,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Info: {fileID: 0}
+  enemyReference: {fileID: 8793741656139258734, guid: 65188a3e767cf044687bd270a01be04c,
+    type: 3}
   connections: []
   guids: 
 --- !u!114 &-8392191581575736125
@@ -59,3 +62,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1f20b4fc0cc8e0478a922d0b58fb347, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4241089322267068863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6590968707339377249}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3725b19557b03c049aba0be47fa68024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnCooldown: 10
+  timer: 10
+  inGame: 0
