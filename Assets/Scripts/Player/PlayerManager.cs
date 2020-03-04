@@ -135,6 +135,7 @@ public class PlayerManager : MonoBehaviour
         else
             animator.SetBool("isMoving", false);
 
-        healthBar.fillAmount = hp * 0.01f;
+        if (healthBar != null)
+            healthBar.fillAmount = hp * 0.01f;
     }
 }
