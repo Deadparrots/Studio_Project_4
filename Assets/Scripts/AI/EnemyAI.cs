@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using StateStuff;
 using UnityEngine.AI;
+using UnityEngine.UI;
 public class EnemyAI : MonoBehaviour
 {
     private List<playerObject> playerList = new List<playerObject>();
@@ -13,6 +14,7 @@ public class EnemyAI : MonoBehaviour
     private float damage = 25;
     private float movementSpeed = 10000;
     public NavMeshAgent agent;
+    public Image healthBar;
     public StateMachine<EnemyAI> sm {get;set;}
     // Start is called before the first frame update
 
@@ -144,7 +146,7 @@ public class EnemyAI : MonoBehaviour
             anim.SetBool("isAttacking", false);
             anim.SetBool("isDead", true);
         }
-
+        healthBar.fillAmount = healthPoints * 0.01f;
     }
 
     public List<playerObject> PlayerList

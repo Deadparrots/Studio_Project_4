@@ -98,7 +98,7 @@ public class Client_Demo : MonoBehaviour
             PlayerManager me = playersList[0];
             if (me == null)
                 return;
-            // TODO: use playerManager's childObject 
+            // TODO: use playerManager's childObject
             me.isShooting = true;
             Vector3 bulletPos = new Vector3(0, 0, 0);
             foreach (Transform child in me.gameObject.transform)
