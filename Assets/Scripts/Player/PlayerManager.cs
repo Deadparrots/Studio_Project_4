@@ -28,12 +28,12 @@ public class PlayerManager : MonoBehaviour
         set { health = value; }
     }
 
-    public float Pscore
+    public float pscore
     {
         get { return score; }
         set { score = value; }
     }
-    public float Pmoney
+    public float pmoney
     {
         get { return money; }
         set { money = value; }

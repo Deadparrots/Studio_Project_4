@@ -30,7 +30,7 @@ public class Shop : MonoBehaviour
     public void Revivalitem()
     {
         PlayerManager player = gameObject.GetComponent<PlayerManager>();
-        if (player.previve == false && player.Pmoney >= 1000)
+        if (player.previve == false && player.pmoney >= 1000)
         {
             Server_Demo.Instance.Revive(player.pid, true);
         }

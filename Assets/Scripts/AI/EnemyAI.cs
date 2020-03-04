@@ -35,6 +35,7 @@ public class EnemyAI : MonoBehaviour
     private void Awake()
     {
         Debug.Log("Enemy starting position: " + gameObject.transform.position);
+        isController = false;
         //rotation.y -= 180;
     }
     void Start()
@@ -46,7 +47,6 @@ public class EnemyAI : MonoBehaviour
         sm.AddState(new AttackState(this, "Attack"));
         sm.AddState(new DeadState(this, "Dead"));
         sm.SetNextState("Patrol");
-        isController = false;
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = true;
@@ -119,7 +119,7 @@ public class EnemyAI : MonoBehaviour
         // so that client doesnt update statemachine
         // statemachine should only be updated by server for consitency
         // isController is to identify whether this AI is in server or in client
-        if (isController)
+         if (isController)
         {
             sm.Update(Time.deltaTime);
             Server_Demo.Instance.UpdateEnemyInClient(id, position, rotation,sm.GetCurrentState(),healthPoints);

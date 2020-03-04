@@ -464,15 +464,18 @@ public class Server_Demo : MonoBehaviour
             waypointPathsList.Add(temp);
         }
 
+
+
         foreach (EnemyAI enemy in GameObject.FindObjectsOfType(typeof(EnemyAI)))
         {
             enemy.pid = enemyID;
             enemy.controller = true;
             enemy.WayPoints = waypointPathsList[0].wayPoints;
             enemy.WaypointIndex = 0;
-            enemy.GetComponent<NavMeshAgent>().Warp(enemy.position);
-            enemyList.Add(enemy);
+            //enemy.GetComponent<NavMeshAgent>().Warp(enemy.position);
             ++enemyID;
+            enemyList.Add(enemy);
+
         }
 
 
