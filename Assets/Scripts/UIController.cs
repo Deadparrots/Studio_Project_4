@@ -49,6 +49,7 @@ public class UIController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Screen.SetResolution(2560, 1600, true);
         this.enabled = false;
     }
     public void SetToLogin()
